@@ -1,0 +1,10 @@
+{
+    "auto": {
+      "numAgents": 3,
+      "maxIterations": 6,
+      "useGitHistory": true
+    },
+    "editor": {
+      "assistantMode": "cycle"
+    }
+  }  

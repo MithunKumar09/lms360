@@ -1,0 +1,123 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+.nyc_output
+*.test.js.snap
+.jest
+test-results
+playwright-report
+playwright/.cache
+tests
+*.spec.js
+*.test.js
+
+# Build outputs (Vercel builds these itself)
+.next
+out
+dist
+build
+*.tsbuildinfo
+
+# Development files
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# SQL files (development/testing)
+*.sql
+!src/lib/db/migrations/*.sql
+
+# Scripts (development only)
+scripts
+k6
+lighthouse
+
+# Documentation
+*.md
+!README.md
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings
+*.sublime-*
+*.code-workspace
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cache
+.cache
+.parcel-cache
+.eslintcache
+.stylelintcache
+.turbo
+
+# Misc
+.DS_Store
+*.pem
+*.lock
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.gz
+
+# Postman collections
+*.postman_collection.json
+
+# Cursor IDE
+.cursor
+
+# Vercel
+.vercel
+
+# User uploads (should be in cloud storage, not in repo)
+public/uploads
+public/uploads/**
+
+# Fake/test data
+public/fakedata
+public/fakedata/**
+
+# Large media files (if not needed for production)
+# Uncomment if you want to exclude all videos
+# *.mp4
+# *.mov
+# *.avi
+# *.webm

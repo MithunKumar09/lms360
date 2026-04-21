@@ -1,0 +1,18 @@
+{
+  "paidCourses": [
+    {
+      "id": "test-course-1",
+      "title": "Test Paid Course",
+      "price": 999,
+      "currency": "INR"
+    }
+  ],
+  "freeCourses": [
+    {
+      "id": "test-course-2",
+      "title": "Test Free Course",
+      "price": 0
+    }
+  ],
+  "note": "These are example test courses. Update with actual course IDs from your test database."
+}

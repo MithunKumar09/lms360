@@ -1,0 +1,44 @@
+/* Custom CSS for SweetAlert2 toasts on course-details-3 page */
+body {
+  overflow-x: visible !important;
+}
+
+.swal2-container {
+  z-index: 1000000010 !important;
+  position: fixed !important;
+  pointer-events: none !important;
+}
+
+.swal2-container.swal2-bottom-start {
+  bottom: 0 !important;
+  left: 0 !important;
+  padding: 0.625em !important;
+  align-items: flex-end !important;
+  justify-content: flex-start !important;
+}
+
+.swal2-container.swal2-bottom-start .swal2-toast {
+  margin: 0 0 0.625em 0.625em !important;
+}
+
+.swal2-toast {
+  z-index: 1000000010 !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15) !important;
+  font-family: inherit !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: auto !important;
+  min-width: 300px !important;
+  max-width: 500px !important;
+}
+
+.swal2-container > * {
+  pointer-events: auto !important;
+}
+
+section[class*="relative"] {
+  overflow: visible !important;
+}
+

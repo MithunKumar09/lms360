@@ -1,0 +1,27 @@
+{
+  "students": [
+    {
+      "email": "student@test.com",
+      "password": "testpassword123",
+      "role": "student",
+      "name": "Test Student"
+    }
+  ],
+  "instructors": [
+    {
+      "email": "instructor@test.com",
+      "password": "testpassword123",
+      "role": "instructor",
+      "name": "Test Instructor"
+    }
+  ],
+  "admins": [
+    {
+      "email": "admin@test.com",
+      "password": "testpassword123",
+      "role": "admin",
+      "name": "Test Admin"
+    }
+  ],
+  "note": "These are example test users. Update with actual test user credentials from your test database."
+}

@@ -1,0 +1,52 @@
+{
+	"info": {
+		"name": "Users Feature",
+		"_postman_id": "c7f8e7d0-0000-4000-8000-aaaaaaaaaaaa",
+		"description": "API collection for Users feature",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/users?q={{q}}&page=1&pageSize=20",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "users"],
+					"query": [
+						{ "key": "q", "value": "{{q}}" },
+						{ "key": "page", "value": "1" },
+						{ "key": "pageSize", "value": "20" }
+					]
+				}
+			}
+		},
+		{
+			"name": "Invite Validate",
+			"request": {
+				"method": "POST",
+				"header": [{ "key": "Content-Type", "value": "application/json" }],
+				"body": { "mode": "raw", "raw": "{\"token\":\"{{token}}\"}" },
+				"url": { "raw": "{{baseUrl}}/api/invite/validate", "host": ["{{baseUrl}}"], "path": ["api","invite","validate"] }
+			}
+		},
+		{
+			"name": "Send Email OTP",
+			"request": {
+				"method": "POST",
+				"header": [{ "key": "Content-Type", "value": "application/json" }],
+				"body": { "mode": "raw", "raw": "{\"email\":\"{{email}}\"}" },
+				"url": { "raw": "{{baseUrl}}/api/invite/otp", "host": ["{{baseUrl}}"], "path": ["api","invite","otp"] }
+			}
+		}
+	],
+	"variable": [
+		{ "key": "baseUrl", "value": "http://localhost:3000" },
+		{ "key": "q", "value": "" },
+		{ "key": "token", "value": "" },
+		{ "key": "email", "value": "" }
+	]
+}
+
