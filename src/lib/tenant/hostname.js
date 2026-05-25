@@ -24,43 +24,50 @@
 export function extractHostname(request) {
   // request.nextUrl.hostname is already normalized by Next.js (handles x-forwarded-host
   // when trustHost is active in next.config or authConfig)
-let hostname = '';
+  let hostname = '';
 
-try {
-  /**
-   * IMPORTANT:
-   * In local subdomain development
-   * (school.localhost, college.localhost),
-   * request.nextUrl.hostname may collapse incorrectly.
-   *
-   * We must prefer raw host header first.
-   */
-  const rawHost = request.headers.get('host') ?? '';
-  const forwardedHost = request.headers.get('x-forwarded-host');
+  try {
+    /**
+     * IMPORTANT:
+     * In local subdomain development
+     * (school.localhost, college.localhost),
+     * request.nextUrl.hostname may collapse incorrectly.
+     *
+     * We must prefer raw host header first.
+     */
+    // const rawHost = request.headers.get('host') ?? '';
+    // const forwardedHost = request.headers.get('x-forwarded-host');
 
-  const effectiveHost =
-    process.env.NODE_ENV === 'production' && forwardedHost
-      ? forwardedHost.split(',')[0].trim()
-      : rawHost;
+    // const effectiveHost =
+    //   process.env.NODE_ENV === 'production' && forwardedHost
+    //\\    ? forwardedHost.split(',')[0].trim()
+    //     : rawHost;
 
-  hostname = effectiveHost.split(':')[0].toLowerCase();
+    // hostname = effectiveHost.split(':')[0].toLowerCase();
 
-  /**
-   * Fallback only if host header missing
-   */
-  if (!hostname) {
-    hostname = request.nextUrl.hostname;
-  }
-} catch {
-    // Fallback: parse from host header manually
     const rawHost = request.headers.get('host') ?? '';
+
+    hostname = rawHost.split(':')[0].toLowerCase();
+
+    /**
+     * Fallback only if host header missing
+     */
+    if (!hostname) {
+      hostname = request.nextUrl.hostname;
+    }
+  } catch {
+    // Fallback: parse from host header manually
+    // const rawHost = request.headers.get('host') ?? '';
     // In production behind a proxy, prefer x-forwarded-host
-    const forwardedHost = request.headers.get('x-forwarded-host');
-    const effectiveHost =
-      process.env.NODE_ENV === 'production' && forwardedHost
-        ? forwardedHost.split(',')[0].trim()
-        : rawHost;
-    hostname = effectiveHost.split(':')[0].toLowerCase();
+    // const forwardedHost = request.headers.get('x-forwarded-host');
+    // const effectiveHost =
+    //   process.env.NODE_ENV === 'production' && forwardedHost
+    //\\     ? forwardedHost.split(',')[0].trim()
+    //     : rawHost;
+    // hostname = effectiveHost.split(':')[0].toLowerCase();
+    const rawHost = request.headers.get('host') ?? '';
+
+    hostname = rawHost.split(':')[0].toLowerCase();
   }
 
   if (!hostname) return null;
