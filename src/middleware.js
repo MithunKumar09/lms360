@@ -363,7 +363,7 @@ export async function middleware(request) {
   //
   // localhost is detected as control plane by isControlPlaneHost(), so local
   // development without a hosts-file override is unaffected.
-  const baseDomain = process.env.NEXTAUTH_BASE_DOMAIN ?? 'edurock.com';
+  const baseDomain = process.env.NEXTAUTH_BASE_DOMAIN ?? 'lms360.in';
 
   let resolvedOrgId = null;    // null = control plane
   let isControlPlane = true;   // default: treat as control plane until resolved
