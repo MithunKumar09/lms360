@@ -93,14 +93,17 @@ export default function PlatformDomainManagementDashboard() {
 
       setOrganizations(rows);
 
-      // Auto-select first org
+      // Auto-select first org on initial load only
       if (!selectedOrg && rows.length > 0) {
         setSelectedOrg(rows[0]);
         setSubdomainInput(rows[0]?.subdomain || "");
         setPlanTierInput(rows[0]?.plan_tier || "basic");
       }
+
+      return rows;
     } catch (err) {
       setError(err.message);
+      return [];
     } finally {
       setLoading(false);
     }
@@ -170,18 +173,20 @@ export default function PlatformDomainManagementDashboard() {
 
       setSuccess(message);
 
-      await fetchOrganizations();
+      const freshOrganizations = await fetchOrganizations();
 
-      // Refresh selected row
-      const refreshed = organizations.find(
+      const refreshed = freshOrganizations.find(
         (o) => o.id === selectedOrg.id
       );
 
       if (refreshed) {
-        setSelectedOrg({
-          ...refreshed,
-          ...(json.domain || {}),
-        });
+        setSelectedOrg(refreshed);
+
+        setSubdomainInput(refreshed?.subdomain || "");
+
+        setPlanTierInput(
+          refreshed?.plan_tier || "basic"
+        );
       }
     } catch (err) {
       setError(err.message);
@@ -341,11 +346,10 @@ export default function PlatformDomainManagementDashboard() {
                   <button
                     key={org.id}
                     onClick={() => selectOrganization(org)}
-                    className={`w-full text-left px-18px py-16px border-b border-borderColor dark:border-borderColor-dark transition-colors ${
-                      isSelected
+                    className={`w-full text-left px-18px py-16px border-b border-borderColor dark:border-borderColor-dark transition-colors ${isSelected
                         ? "bg-primaryColor/5"
                         : "hover:bg-gray-50 dark:hover:bg-gray-900"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-12px">
                       <div className="min-w-0">
@@ -374,22 +378,20 @@ export default function PlatformDomainManagementDashboard() {
                         >
                           <span className="flex items-center gap-4px">
                             <SSLIcon
-                              className={`w-3 h-3 ${
-                                org.ssl_status === "provisioning"
+                              className={`w-3 h-3 ${org.ssl_status === "provisioning"
                                   ? "animate-spin"
                                   : ""
-                              }`}
+                                }`}
                             />
                             {ssl.label}
                           </span>
                         </span>
 
                         <span
-                          className={`px-8px py-3px rounded-full text-[11px] font-semibold ${
-                            PLAN_BADGES[
-                              org.plan_tier || "basic"
+                          className={`px-8px py-3px rounded-full text-[11px] font-semibold ${PLAN_BADGES[
+                            org.plan_tier || "basic"
                             ]
-                          }`}
+                            }`}
                         >
                           {(org.plan_tier || "basic").toUpperCase()}
                         </span>
@@ -437,11 +439,10 @@ export default function PlatformDomainManagementDashboard() {
                       </span>
 
                       <span
-                        className={`px-10px py-4px rounded-full text-xs font-semibold ${
-                          PLAN_BADGES[
-                            selectedOrg.plan_tier || "basic"
+                        className={`px-10px py-4px rounded-full text-xs font-semibold ${PLAN_BADGES[
+                          selectedOrg.plan_tier || "basic"
                           ]
-                        }`}
+                          }`}
                       >
                         {(selectedOrg.plan_tier || "basic").toUpperCase()}
                       </span>
