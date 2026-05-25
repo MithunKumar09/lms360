@@ -4,7 +4,6 @@
  * 403 Forbidden page for unauthorized access attempts.
  */
 
-import { Metadata } from 'next';
 import Link from 'next/link';
 import PageWrapper from '@/components/shared/wrappers/PageWrapper';
 import ThemeController from '@/components/shared/others/ThemeController';
