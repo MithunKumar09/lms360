@@ -1,3 +1,4 @@
+//src/app/api/admin/settings/custom-domain/route.js 
 /**
  * Admin Custom Domain Management API
  *

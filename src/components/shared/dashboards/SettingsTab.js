@@ -1,3 +1,4 @@
+//src\components\shared\dashboards\SettingsTab.js
 "use client";
 import TabButtonSecondary from "../buttons/TabButtonSecondary";
 import useTab from "@/hooks/useTab";
@@ -5,9 +6,16 @@ import ProfileContent from "./ProfileContent";
 import PasswordContent from "./PasswordContent";
 import SocialIconContent from "./SocialIconContent";
 import CustomDomainSettings from "./CustomDomainSettings";
+import PlatformDomainManagementDashboard from "@/components/platform/PlatformDomainManagementDashboard";
+import { useSession } from "@/hooks/api/useAuth.js";
 import TabContentWrapper from "../wrappers/TabContentWrapper";
 
 const SettingsTab = () => {
+  const { data: sessionData } = useSession();
+
+  const userRole = sessionData?.user?.role || null;
+
+  const isSuperadmin = userRole === "superadmin";
   const { currentIdx, handleTabClick } = useTab();
   const tabbuttons = [
     {
@@ -24,7 +32,11 @@ const SettingsTab = () => {
     },
     {
       name: "DOMAIN",
-      content: <CustomDomainSettings />,
+      content: isSuperadmin ? (
+        <PlatformDomainManagementDashboard />
+      ) : (
+        <CustomDomainSettings />
+      ),
     },
   ];
   return (

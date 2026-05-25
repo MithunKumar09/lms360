@@ -1,3 +1,4 @@
+//rc/app/api/superadmin/organizations/[id]/domain/route.js
 /**
  * Superadmin Domain Management API
  *

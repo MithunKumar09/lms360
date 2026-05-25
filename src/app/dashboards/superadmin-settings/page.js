@@ -1,3 +1,4 @@
+//src/app/dashboards/superadmin-settings/page.js
 import AdminSettingsMain from "@/components/layout/main/dashboards/AdminSettingsMain";
 import DashboardContainer from "@/components/shared/containers/DashboardContainer";
 import ThemeController from "@/components/shared/others/ThemeController";

@@ -1,3 +1,4 @@
+//src/app/api/organizations/[id]/route.js
 /**
  * Organization by ID API Route
  * 
