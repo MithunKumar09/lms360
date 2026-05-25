@@ -1,3 +1,4 @@
+//src/lib/tenant/hostname.js
 /**
  * Edge-safe hostname utilities
  *
@@ -128,6 +129,7 @@ export function isControlPlaneHost(hostname, baseDomain) {
    */
   return (
     normalizedHost === baseDomain ||
+    normalizedHost === `www.${baseDomain}` ||
     normalizedHost === `admin.${baseDomain}`
   );
 }
