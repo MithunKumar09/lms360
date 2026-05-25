@@ -4,6 +4,7 @@ import useTab from "@/hooks/useTab";
 import ProfileContent from "./ProfileContent";
 import PasswordContent from "./PasswordContent";
 import SocialIconContent from "./SocialIconContent";
+import CustomDomainSettings from "./CustomDomainSettings";
 import TabContentWrapper from "../wrappers/TabContentWrapper";
 
 const SettingsTab = () => {
@@ -20,6 +21,10 @@ const SettingsTab = () => {
     {
       name: "SOCIAL ICON",
       content: <SocialIconContent />,
+    },
+    {
+      name: "DOMAIN",
+      content: <CustomDomainSettings />,
     },
   ];
   return (

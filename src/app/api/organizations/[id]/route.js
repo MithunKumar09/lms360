@@ -31,6 +31,7 @@ import {
 import { getBrandAssetsByOrgId, upsertBrandAssets } from '@/lib/db/organizationBrandAssets.js';
 import { createAuditEvent } from '@/lib/db/auditEvents.js';
 import { getClient } from '@/lib/db/index.js';
+import { invalidateByOrgId } from '@/lib/tenant/cache.js';
 
 /**
  * GET /api/organizations/[id]
@@ -240,6 +241,12 @@ export async function PATCH(request, { params }) {
         delete updateData.primary_admin;
       }
 
+      // Slug-subdomain sync: if slug is changing and subdomain currently mirrors slug,
+      // keep them in sync so the org remains reachable at {newSlug}.edurock.com.
+      if (data.slug && data.slug !== existingOrg.slug && existingOrg.subdomain === existingOrg.slug) {
+        updateData.subdomain = data.slug;
+      }
+
       // Remove brand_assets from update data (handle separately)
       const brandAssets = updateData.brand_assets;
       delete updateData.brand_assets;
@@ -333,6 +340,11 @@ export async function PATCH(request, { params }) {
       organization = await getOrganizationById(id);
       const updatedBrandAssets = await getBrandAssetsByOrgId(id);
 
+      // Invalidate tenant cache if domain-related fields changed
+      if (updateData.subdomain !== undefined || updateData.status !== undefined) {
+        invalidateByOrgId(id);
+      }
+
       // Create audit event
       try {
         await createAuditEvent({
@@ -345,10 +357,12 @@ export async function PATCH(request, { params }) {
             previous: {
               name: existingOrg.name,
               status: existingOrg.status,
+              plan_tier: existingOrg.plan_tier,
             },
             current: {
               name: organization.name,
               status: organization.status,
+              plan_tier: organization.plan_tier,
             },
           },
           ip_address: ipAddress,

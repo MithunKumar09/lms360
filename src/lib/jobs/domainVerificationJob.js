@@ -23,11 +23,26 @@ import { triggerSslProvisioning } from './sslProvisioningJob.js';
 async function verifyOrgDomain(org) {
   const txtHostname = `_edurock-verify.${org.custom_domain}`;
 
+  // Always update attempt counter and last-checked timestamp, verified or not.
+  // This enables the attempt-limit filter (F9-B) and surfaces feedback in the UI.
+  const updateAttempt = () => query(
+    `UPDATE organizations
+     SET domain_verification_attempts = COALESCE(domain_verification_attempts, 0) + 1,
+         domain_verification_last_checked_at = NOW()
+     WHERE id = $1`,
+    [org.id]
+  ).catch((err) => {
+    // Non-fatal — don't let a counter update failure break the verification loop
+    console.error(`Failed to update attempt counter for org ${org.id}:`, err.message);
+  });
+
   let txtRecords;
   try {
     txtRecords = await dns.resolveTxt(txtHostname);
   } catch {
     // DNS lookup failed (NXDOMAIN, timeout, etc.) — not verified yet
+    await updateAttempt();
+    console.log(JSON.stringify({ event: 'domain_verify_dns_miss', orgId: org.id, domain: org.custom_domain }));
     return { verified: false, orgId: org.id, domain: org.custom_domain };
   }
 
@@ -36,19 +51,33 @@ async function verifyOrgDomain(org) {
   const isVerified = flatRecords.includes(org.domain_verification_token);
 
   if (!isVerified) {
+    await updateAttempt();
     return { verified: false, orgId: org.id, domain: org.custom_domain };
   }
 
-  // Mark as verified and kick off SSL provisioning
-  await query(
+  // Mark as verified and kick off SSL provisioning.
+  // The WHERE domain_verified=false guard is an idempotency lock: if two concurrent
+  // cron executions both resolve DNS successfully, only the first UPDATE matches
+  // (rowCount=1). The second gets rowCount=0 and skips triggerSslProvisioning,
+  // preventing duplicate Cloudflare hostname creation.
+  const updateResult = await query(
     `UPDATE organizations
      SET domain_verified = true,
          domain_verified_at = NOW(),
-         ssl_status = 'provisioning'
+         ssl_status = 'provisioning',
+         domain_verification_attempts = COALESCE(domain_verification_attempts, 0) + 1,
+         domain_verification_last_checked_at = NOW()
      WHERE id = $1
        AND domain_verified = false`,
     [org.id]
   );
+
+  if ((updateResult.rowCount ?? 0) === 0) {
+    // Another process already verified this org — skip SSL provisioning to avoid duplicate
+    return { verified: false, orgId: org.id, domain: org.custom_domain };
+  }
+
+  console.log(JSON.stringify({ event: 'domain_verified', orgId: org.id, domain: org.custom_domain }));
 
   // Trigger Cloudflare Custom Hostname provisioning (fire-and-forget is intentional;
   // ssl_status is polled separately by the SSL job)
@@ -66,7 +95,9 @@ async function verifyOrgDomain(org) {
  * @returns {Promise<{ checked: number, verified: number, failed: number }>}
  */
 export async function runDomainVerificationJob() {
-  // Only check orgs that are active and have an unverified custom domain
+  // Only check orgs that are active, have an unverified custom domain, and have
+  // not exceeded the attempt limit (F9-B: stop after 50 attempts to avoid
+  // indefinite DNS lookups for misconfigured/abandoned domains).
   const { rows: pendingOrgs } = await query(
     `SELECT id, custom_domain, domain_verification_token
      FROM organizations
@@ -74,6 +105,7 @@ export async function runDomainVerificationJob() {
        AND domain_verified = false
        AND domain_verification_token IS NOT NULL
        AND status = 'active'
+       AND (domain_verification_attempts IS NULL OR domain_verification_attempts < 50)
      ORDER BY updated_at ASC
      LIMIT 100`
   );

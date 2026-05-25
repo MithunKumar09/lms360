@@ -161,6 +161,9 @@ export default function OrganizationTable({
                   <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                 </td>
                 <td className="p-15px">
+                  <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                </td>
+                <td className="p-15px">
                   <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                 </td>
                 <td className="p-15px">
@@ -244,6 +247,9 @@ export default function OrganizationTable({
             </th>
             <th className="text-left p-15px text-sm font-medium text-contentColor dark:text-contentColor-dark">
               Status
+            </th>
+            <th className="text-left p-15px text-sm font-medium text-contentColor dark:text-contentColor-dark">
+              Domain
             </th>
             <th className="text-left p-15px text-sm font-medium text-contentColor dark:text-contentColor-dark">
               Created At
@@ -331,6 +337,37 @@ export default function OrganizationTable({
                   >
                     {org.status?.charAt(0).toUpperCase() + org.status?.slice(1) || 'Active'}
                   </span>
+                </td>
+                <td className="p-15px">
+                  <div className="space-y-4px">
+                    {org.subdomain && (
+                      <p className="text-xs font-mono text-contentColor dark:text-contentColor-dark">
+                        {org.subdomain}.*
+                      </p>
+                    )}
+                    {org.custom_domain ? (
+                      <div className="flex items-center gap-6px">
+                        <p className="text-xs font-mono text-contentColor dark:text-contentColor-dark">
+                          {org.custom_domain}
+                        </p>
+                        <span className={`px-6px py-2px rounded-full text-xs font-semibold ${
+                          org.ssl_status === 'active'
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                            : org.ssl_status === 'failed'
+                            ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                            : org.ssl_status === 'provisioning'
+                            ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+                            : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                        }`}>
+                          {org.domain_verified ? org.ssl_status : 'unverified'}
+                        </span>
+                      </div>
+                    ) : (
+                      !org.subdomain && (
+                        <p className="text-xs text-contentColor dark:text-contentColor-dark opacity-40">—</p>
+                      )
+                    )}
+                  </div>
                 </td>
                 <td className="p-15px">
                   <span className="text-contentColor dark:text-contentColor-dark text-sm">

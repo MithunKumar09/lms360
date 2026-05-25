@@ -64,12 +64,6 @@ try {
 
   if (!hostname) return null;
 
-  console.log('🛡️ [MIDDLEWARE] Hostname Debug:', {
-  rawHost: request.headers.get('host'),
-  nextUrlHostname: request.nextUrl.hostname,
-  finalHostname: hostname,
-});
-
   // Reject obviously malformed hostnames (null bytes, path traversal, etc.)
   if (
     hostname.includes('..') ||

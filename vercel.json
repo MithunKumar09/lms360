@@ -1,0 +1,20 @@
+{
+  "crons": [
+    {
+      "path": "/api/jobs/verify-custom-domains",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/jobs/sync-ssl-status",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/jobs/hard-delete-expired-orgs",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/jobs/cleanup-sessions",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

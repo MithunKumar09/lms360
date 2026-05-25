@@ -19,6 +19,7 @@ import ErrorDisplay from '@/components/shared/errors/ErrorDisplay.js';
 import ImagePicker from '@/components/shared/forms/ImagePicker.js';
 import FormSelectAsync from '@/components/shared/forms/FormSelectAsync.js';
 import FormMultiSelect from '@/components/shared/forms/FormMultiSelect.js';
+import OrgDomainPanel from './OrgDomainPanel.jsx';
 
 // Human-friendly field labels for error summaries
 const FIELD_LABELS = {
@@ -141,6 +142,7 @@ export default function OrganizationFormMain({ organization = null }) {
     contact_phone: organization?.contact_phone || '',
     website_url: organization?.website_url || '',
     status: organization?.status || 'active',
+    plan_tier: organization?.plan_tier || 'basic',
     brand_assets: organization?.brand_assets || [],
   });
 
@@ -752,21 +754,46 @@ export default function OrganizationFormMain({ organization = null }) {
           <div className="bg-whiteColor dark:bg-whiteColor-dark border border-borderColor dark:border-borderColor-dark rounded p-25px">
             <h2 className="text-size-20 text-blackColor dark:text-blackColor-dark font-bold mb-20px">Status</h2>
 
-            <div>
-              <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
-                Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) => handleChange('status', e.target.value)}
-                className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded font-medium"
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-20px">
+              <div>
+                <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
+                  Status
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => handleChange('status', e.target.value)}
+                  className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded font-medium"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="suspended">Suspended</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
+                  Plan Tier
+                </label>
+                <select
+                  value={formData.plan_tier ?? 'basic'}
+                  onChange={(e) => handleChange('plan_tier', e.target.value)}
+                  className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded font-medium"
+                >
+                  <option value="basic">Basic (subdomain only)</option>
+                  <option value="pro">Pro (custom domain enabled)</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+                <p className="mt-6px text-xs text-contentColor dark:text-contentColor-dark opacity-70">
+                  Pro plan unlocks custom domain support for this organization.
+                </p>
+              </div>
             </div>
           </div>
+        )}
+
+        {/* Domain Settings (Edit Mode Only) */}
+        {isEditMode && organization?.id && (
+          <OrgDomainPanel orgId={organization.id} />
         )}
 
         {/* Submit Button (Sticky Footer) */}

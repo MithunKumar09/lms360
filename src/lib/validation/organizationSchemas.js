@@ -380,6 +380,9 @@ export const organizationUpdateSchema = z
 
     // Status (optional)
     status: z.enum(['active', 'inactive', 'suspended']).optional(),
+
+    // Plan tier (optional, superadmin only — enforced at API layer)
+    plan_tier: z.enum(['basic', 'pro', 'enterprise']).optional(),
   })
   .refine(
     (data) => {

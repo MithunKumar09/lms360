@@ -67,9 +67,27 @@ async function createCloudflareCustomHostname(domain) {
 
   if (!data.success) {
     const cfError = data.errors?.[0]?.message ?? 'Unknown Cloudflare error';
-    // Code 1407 = hostname already exists — treat as success
+    // Code 1407 = hostname already exists in Cloudflare.
+    // Fetch the existing hostname ID so the sync job can poll it; without this
+    // the org stays permanently stuck in ssl_status='provisioning' since the
+    // sync query requires ssl_cloudflare_hostname_id IS NOT NULL.
     if (data.errors?.[0]?.code === 1407) {
-      return { success: true, hostnameId: null, alreadyExists: true, error: null };
+      try {
+        const listRes = await fetch(
+          `${CLOUDFLARE_API_BASE}/zones/${zoneId}/custom_hostnames?hostname=${encodeURIComponent(domain)}`,
+          { headers: cfHeaders() }
+        );
+        const listData = await listRes.json();
+        const existingId = listData.result?.[0]?.id ?? null;
+        return { success: true, hostnameId: existingId, alreadyExists: true, error: null };
+      } catch {
+        // Could not fetch existing ID — return null so caller can handle gracefully
+        return { success: true, hostnameId: null, alreadyExists: true, error: null };
+      }
+    }
+    // Handle Cloudflare rate limit (429) — surface to caller for retry logic
+    if (res.status === 429 || data.errors?.[0]?.code === 429) {
+      return { success: false, hostnameId: null, rateLimited: true, error: 'Cloudflare rate limit' };
     }
     return { success: false, hostnameId: null, error: cfError };
   }
@@ -90,31 +108,41 @@ export async function triggerSslProvisioning(orgId, domain) {
     const result = await createCloudflareCustomHostname(domain);
 
     if (!result.success) {
+      // Rate-limited by Cloudflare — reset to pending so the next cron cycle retries
+      if (result.rateLimited) {
+        console.log(JSON.stringify({ event: 'ssl_provision_rate_limited', orgId, domain }));
+        await query(`UPDATE organizations SET ssl_status = 'pending' WHERE id = $1`, [orgId]);
+        return;
+      }
       console.error(`Cloudflare custom hostname creation failed for ${domain}:`, result.error);
       await query(
-        `UPDATE organizations SET ssl_status = 'failed' WHERE id = $1`,
-        [orgId]
+        `UPDATE organizations SET ssl_status = 'failed', domain_ssl_error = $1 WHERE id = $2`,
+        [result.error ?? 'Cloudflare provisioning failed', orgId]
       );
       return;
     }
 
-    // Store the Cloudflare hostname ID for future polling (status sync)
-    // ssl_status stays 'provisioning' until the sync job marks it 'active'
+    // Store the Cloudflare hostname ID for future polling (status sync).
+    // hostnameId may be null if alreadyExists=true AND the lookup failed — in that
+    // case ssl_status stays 'provisioning' and the sync job will pick it up once
+    // the next provision attempt stores the ID.
     if (result.hostnameId) {
       await query(
         `UPDATE organizations
          SET ssl_status = 'provisioning',
-             ssl_cloudflare_hostname_id = $1
+             ssl_cloudflare_hostname_id = $1,
+             domain_ssl_error = NULL
          WHERE id = $2`,
         [result.hostnameId, orgId]
       );
+      console.log(JSON.stringify({ event: 'ssl_provision_triggered', orgId, domain, hostnameId: result.hostnameId }));
     }
-    // alreadyExists: Cloudflare already has this hostname — just mark as provisioning
+    // alreadyExists with null hostnameId: ssl_status already 'provisioning' from verification step
   } catch (err) {
     console.error(`SSL provisioning error for org ${orgId}, domain ${domain}:`, err);
     await query(
-      `UPDATE organizations SET ssl_status = 'failed' WHERE id = $1`,
-      [orgId]
+      `UPDATE organizations SET ssl_status = 'failed', domain_ssl_error = $1 WHERE id = $2`,
+      [err.message ?? 'Unknown provisioning error', orgId]
     );
   }
 }
@@ -166,15 +194,18 @@ export async function runSslStatusSyncJob() {
 
       if (cfStatus === 'active' && sslStatus === 'active') {
         await query(
-          `UPDATE organizations SET ssl_status = 'active' WHERE id = $1`,
+          `UPDATE organizations SET ssl_status = 'active', domain_ssl_error = NULL WHERE id = $1`,
           [org.id]
         );
+        console.log(JSON.stringify({ event: 'ssl_activated', orgId: org.id, domain: org.custom_domain }));
         activated++;
       } else if (cfStatus === 'blocked' || sslStatus === 'validation_timed_out') {
+        const errMsg = `Cloudflare status: ${cfStatus}, ssl: ${sslStatus}`;
         await query(
-          `UPDATE organizations SET ssl_status = 'failed' WHERE id = $1`,
-          [org.id]
+          `UPDATE organizations SET ssl_status = 'failed', domain_ssl_error = $1 WHERE id = $2`,
+          [errMsg, org.id]
         );
+        console.log(JSON.stringify({ event: 'ssl_failed', orgId: org.id, domain: org.custom_domain, reason: errMsg }));
         failed++;
       }
       // Otherwise still provisioning — check again next cycle
