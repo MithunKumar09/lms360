@@ -1,3 +1,4 @@
+//OrgDomainPanel.jsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -96,7 +97,7 @@ export default function OrgDomainPanel({ orgId }) {
           Subdomain
         </label>
         <p className="text-xs text-contentColor dark:text-contentColor-dark opacity-60 mb-10px">
-          Org is reachable at <span className="font-mono">{subdomainInput || "—"}.edurock.com</span>.
+          Org is reachable at <span className="font-mono">{subdomainInput || "—"}.lms360.in</span>.
           Changing this updates routing immediately.
         </p>
         <div className="flex gap-10px">

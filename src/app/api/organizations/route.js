@@ -23,12 +23,14 @@ import {
   createOrganization,
   listOrganizations,
   checkSlugExists,
+  checkSubdomainExists,
   checkCodeExists,
   createOrganizationWithAssets,
 } from '@/lib/db/organizations.js';
 import { upsertBrandAssets } from '@/lib/db/organizationBrandAssets.js';
 import { createAuditEvent } from '@/lib/db/auditEvents.js';
 import { getClient } from '@/lib/db/index.js';
+import { invalidateByOrgId } from '@/lib/tenant/cache.js';
 
 /**
  * GET /api/organizations
@@ -56,7 +58,7 @@ export async function GET(request) {
           success: false,
           error: authError.message || 'Unauthorized. Superadmin access required.',
         },
-        { 
+        {
           status: authError.status || 403,
           headers: {
             'Content-Type': 'application/json',
@@ -100,7 +102,7 @@ export async function GET(request) {
           error: 'Failed to fetch organizations from database',
           details: process.env.NODE_ENV !== 'production' ? dbError.message : undefined,
         },
-        { 
+        {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
@@ -144,7 +146,7 @@ export async function GET(request) {
         error: error.message || 'An unexpected error occurred while listing organizations',
         details: process.env.NODE_ENV !== 'production' ? error.stack : undefined,
       },
-      { 
+      {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
@@ -186,7 +188,7 @@ export async function POST(request) {
           success: false,
           error: authError.message || 'Unauthorized. Superadmin access required.',
         },
-        { 
+        {
           status: authError.status || 403,
           headers: {
             'Content-Type': 'application/json',
@@ -287,6 +289,21 @@ export async function POST(request) {
       );
     }
 
+    const subdomainExists = await checkSubdomainExists(data.subdomain);
+
+    if (subdomainExists) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Organization with this subdomain already exists',
+          errors: {
+            subdomain: 'This subdomain is already taken',
+          },
+        },
+        { status: 409 }
+      );
+    }
+
     // Check code uniqueness
     const codeExists = await checkCodeExists(data.org_code);
     if (codeExists) {
@@ -316,6 +333,12 @@ export async function POST(request) {
       const orgData = {
         name: data.name,
         slug: data.slug,
+        // Domain defaults
+        subdomain: data.subdomain || data.slug,
+        custom_domain: null,
+        domain_verified: false,
+        ssl_status: 'active',
+        plan_tier: 'basic',
         org_type: data.org_type,
         display_name: data.display_name || null,
         org_code: data.org_code,
@@ -338,7 +361,7 @@ export async function POST(request) {
       // Insert organization
       const orgResult = await client.query(
         `INSERT INTO organizations (
-          name, slug, org_type, display_name, org_code,
+          name, slug, subdomain, custom_domain, domain_verified, ssl_status, plan_tier, org_type, display_name, org_code,
           country, state, city,
           timezone, default_locale, currency, academic_year_start_month,
           academic_levels,
@@ -346,17 +369,23 @@ export async function POST(request) {
           contact_email, contact_phone, website_url,
           status
         ) VALUES (
-          $1, $2, $3, $4, $5,
-          $6, $7, $8,
-          $9, $10, $11, $12,
-          $13,
-          $14, $15,
-          $16, $17, $18,
-          $19
+          $1, $2, $3, $4, $5, $6, $7,
+          $8, $9, $10,
+          $11, $12, $13,
+          $14, $15, $16, $17,
+          $18,
+          $19, $20,
+          $21, $22, $23,
+          $24
         ) RETURNING *`,
         [
           orgData.name,
           orgData.slug,
+          orgData.subdomain,
+          orgData.custom_domain,
+          orgData.domain_verified,
+          orgData.ssl_status,
+          orgData.plan_tier,
           orgData.org_type,
           orgData.display_name,
           orgData.org_code,
@@ -404,6 +433,7 @@ export async function POST(request) {
       }
 
       await client.query('COMMIT');
+      invalidateByOrgId(organization.id);
 
       // Create audit event
       try {
@@ -466,7 +496,7 @@ export async function POST(request) {
           success: false,
           error: 'Unauthorized. Superadmin access required.',
         },
-        { 
+        {
           status: error.status,
           headers: {
             'Content-Type': 'application/json',
@@ -482,7 +512,7 @@ export async function POST(request) {
           success: false,
           error: 'CSRF validation failed',
         },
-        { 
+        {
           status: 403,
           headers: {
             'Content-Type': 'application/json',
@@ -502,7 +532,7 @@ export async function POST(request) {
               slug: 'This slug is already taken',
             },
           },
-          { 
+          {
             status: 409,
             headers: {
               'Content-Type': 'application/json',
@@ -510,6 +540,20 @@ export async function POST(request) {
           }
         );
       }
+
+      if (error.constraint?.includes('subdomain')) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Organization with this subdomain already exists',
+            errors: {
+              subdomain: 'This subdomain is already taken',
+            },
+          },
+          { status: 409 }
+        );
+      }
+
       if (error.constraint?.includes('code')) {
         return NextResponse.json(
           {
@@ -519,7 +563,7 @@ export async function POST(request) {
               org_code: 'This organization code is already taken',
             },
           },
-          { 
+          {
             status: 409,
             headers: {
               'Content-Type': 'application/json',
@@ -540,7 +584,7 @@ export async function POST(request) {
             ? `Missing database ${error.code === '42703' ? 'column' : 'table'}: ${error.message}`
             : undefined,
         },
-        { 
+        {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
@@ -556,7 +600,7 @@ export async function POST(request) {
           success: false,
           error: `Invalid organization data: ${error.message}`,
         },
-        { 
+        {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
@@ -571,7 +615,7 @@ export async function POST(request) {
         error: error.message || 'Failed to create organization',
         details: process.env.NODE_ENV !== 'production' ? error.stack : undefined,
       },
-      { 
+      {
         status: 500,
         headers: {
           'Content-Type': 'application/json',

@@ -88,6 +88,49 @@ export const organizationSlugSchema = z
   .trim();
 
 /**
+ * Organization subdomain schema
+ * Format: lowercase, a-z0-9-, 3-63 chars
+ */
+export const organizationSubdomainSchema = z
+  .string()
+  .min(1, 'Subdomain is required')
+  .min(3, 'Subdomain must be at least 3 characters')
+  .max(63, 'Subdomain must be at most 63 characters')
+  .regex(
+    /^[a-z0-9-]+$/,
+    'Subdomain must contain only lowercase letters, numbers, and hyphens'
+  )
+  .refine((value) => !value.startsWith('-') && !value.endsWith('-'), {
+    message: 'Subdomain cannot start or end with a hyphen',
+  })
+  .refine((value) => !value.includes('--'), {
+    message: 'Subdomain cannot contain consecutive hyphens',
+  })
+  .refine(
+  (value) =>
+    ![
+      'www',
+      'api',
+      'admin',
+      'app',
+      'mail',
+      'smtp',
+      'dashboard',
+      'superadmin',
+      'root',
+      'system',
+      'cdn',
+      'assets',
+      'static',
+    ].includes(value),
+  {
+    message: 'This subdomain is reserved',
+  }
+)
+  .toLowerCase()
+  .trim();
+
+/**
  * Organization type schema (enum)
  */
 export const organizationTypeSchema = z.enum(VALID_ORG_TYPES, {
@@ -264,6 +307,7 @@ export const organizationCreateSchema = z
     // Basic info
     name: organizationNameSchema,
     slug: organizationSlugSchema,
+    subdomain: organizationSubdomainSchema,
     org_type: organizationTypeSchema,
     display_name: displayNameSchema,
     org_code: organizationCodeSchema,
@@ -337,6 +381,7 @@ export const organizationUpdateSchema = z
     // Basic info (all optional)
     name: organizationNameSchema.optional(),
     slug: organizationSlugSchema.optional(),
+    subdomain: organizationSubdomainSchema.optional(),
     org_type: organizationTypeSchema.optional(),
     display_name: displayNameSchema,
     org_code: organizationCodeSchema.optional(),
@@ -411,6 +456,7 @@ export const organizationBulkImportSchema = z
     // Basic info (required)
     name: organizationNameSchema,
     slug: organizationSlugSchema.optional(), // Auto-generated if not provided
+    subdomain: organizationSubdomainSchema.optional(),
     org_type: organizationTypeSchema,
     display_name: displayNameSchema,
     org_code: organizationCodeSchema,
@@ -476,6 +522,7 @@ export const organizationBulkImportSchema = z
     return {
       name: data.name,
       slug: data.slug, // May be undefined, will be auto-generated if not provided
+      subdomain: data.subdomain || data.slug,
       org_type: data.org_type,
       display_name: data.display_name,
       org_code: data.org_code,

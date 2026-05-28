@@ -142,7 +142,7 @@ export default function OrganizationFormMain({ organization = null }) {
     contact_phone: organization?.contact_phone || '',
     website_url: organization?.website_url || '',
     status: organization?.status || 'active',
-    plan_tier: organization?.plan_tier || 'basic',
+    subdomain: organization?.subdomain || '',
     brand_assets: organization?.brand_assets || [],
   });
 
@@ -183,6 +183,15 @@ export default function OrganizationFormMain({ organization = null }) {
       });
     }
   };
+
+  useEffect(() => {
+    if (formData.slug && !isEditMode && !formData.subdomain) {
+      setFormData((prev) => ({
+        ...prev,
+        subdomain: formData.slug,
+      }));
+    }
+  }, [formData.slug, formData.subdomain, isEditMode]);
 
   // Handle brand asset change
   const handleBrandAssetChange = (keyName, url) => {
@@ -329,11 +338,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.name
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.name
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="Enter organization name"
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'name-error' : undefined}
@@ -364,13 +372,11 @@ export default function OrganizationFormMain({ organization = null }) {
                 value={formData.slug}
                 onChange={(e) => handleChange('slug', e.target.value)}
                 disabled={autoGenerateSlug && !isEditMode}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.slug
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded ${
-                  autoGenerateSlug && !isEditMode ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.slug
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded ${autoGenerateSlug && !isEditMode ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 placeholder="example-university"
                 aria-invalid={!!errors.slug}
                 aria-describedby={errors.slug ? 'slug-error' : undefined}
@@ -386,11 +392,10 @@ export default function OrganizationFormMain({ organization = null }) {
               <select
                 value={formData.org_type}
                 onChange={(e) => handleChange('org_type', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.org_type
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } rounded font-medium`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.org_type
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } rounded font-medium`}
                 aria-invalid={!!errors.org_type}
                 aria-describedby={errors.org_type ? 'org_type-error' : undefined}
               >
@@ -427,11 +432,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="text"
                 value={formData.org_code}
                 onChange={(e) => handleChange('org_code', e.target.value.toUpperCase())}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.org_code
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded uppercase`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.org_code
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded uppercase`}
                 placeholder="EXU001"
                 maxLength={8}
                 aria-invalid={!!errors.org_code}
@@ -455,11 +459,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="text"
                 value={formData.country}
                 onChange={(e) => handleChange('country', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.country
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.country
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="India"
                 aria-invalid={!!errors.country}
                 aria-describedby={errors.country ? 'country-error' : undefined}
@@ -475,11 +478,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="text"
                 value={formData.state}
                 onChange={(e) => handleChange('state', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.state
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.state
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="Karnataka"
                 aria-invalid={!!errors.state}
                 aria-describedby={errors.state ? 'state-error' : undefined}
@@ -495,11 +497,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="text"
                 value={formData.city}
                 onChange={(e) => handleChange('city', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.city
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.city
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="Bangalore"
                 aria-invalid={!!errors.city}
                 aria-describedby={errors.city ? 'city-error' : undefined}
@@ -532,11 +533,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="text"
                 value={formData.default_locale}
                 onChange={(e) => handleChange('default_locale', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.default_locale
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.default_locale
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="en-IN"
                 aria-invalid={!!errors.default_locale}
                 aria-describedby={errors.default_locale ? 'default_locale-error' : undefined}
@@ -561,11 +561,10 @@ export default function OrganizationFormMain({ organization = null }) {
               <select
                 value={formData.academic_year_start_month}
                 onChange={(e) => handleChange('academic_year_start_month', parseInt(e.target.value, 10))}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.academic_year_start_month
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } rounded font-medium`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.academic_year_start_month
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } rounded font-medium`}
                 aria-invalid={!!errors.academic_year_start_month}
                 aria-describedby={errors.academic_year_start_month ? 'academic_year_start_month-error' : undefined}
               >
@@ -605,11 +604,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="text"
                 value={formData.primary_admin.name}
                 onChange={(e) => handleChange('primary_admin.name', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors['primary_admin.name'] || errors['primary_admin']
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors['primary_admin.name'] || errors['primary_admin']
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="John Doe"
                 aria-invalid={!!(errors['primary_admin.name'] || errors['primary_admin'])}
                 aria-describedby={errors['primary_admin.name'] || errors['primary_admin'] ? 'primary_admin-name-error' : undefined}
@@ -625,11 +623,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="email"
                 value={formData.primary_admin.email}
                 onChange={(e) => handleChange('primary_admin.email', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors['primary_admin.email'] || errors['primary_admin']
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors['primary_admin.email'] || errors['primary_admin']
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="john.doe@example.edu"
                 aria-invalid={!!(errors['primary_admin.email'] || errors['primary_admin'])}
                 aria-describedby={errors['primary_admin.email'] || errors['primary_admin'] ? 'primary_admin-email-error' : undefined}
@@ -652,11 +649,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="email"
                 value={formData.contact_email}
                 onChange={(e) => handleChange('contact_email', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.contact_email
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.contact_email
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="contact@example.edu"
                 aria-invalid={!!errors.contact_email}
                 aria-describedby={errors.contact_email ? 'contact_email-error' : undefined}
@@ -672,11 +668,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="tel"
                 value={formData.contact_phone}
                 onChange={(e) => handleChange('contact_phone', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.contact_phone
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.contact_phone
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="+91-80-12345678"
                 aria-invalid={!!errors.contact_phone}
                 aria-describedby={errors.contact_phone ? 'contact_phone-error' : undefined}
@@ -692,11 +687,10 @@ export default function OrganizationFormMain({ organization = null }) {
                 type="url"
                 value={formData.website_url}
                 onChange={(e) => handleChange('website_url', e.target.value)}
-                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${
-                  errors.website_url
-                    ? 'border-red-500 dark:border-red-500'
-                    : 'border-borderColor dark:border-borderColor-dark'
-                } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
+                className={`w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border ${errors.website_url
+                  ? 'border-red-500 dark:border-red-500'
+                  : 'border-borderColor dark:border-borderColor-dark'
+                  } placeholder:text-placeholder placeholder:opacity-80 font-medium rounded`}
                 placeholder="https://example.edu"
                 aria-invalid={!!errors.website_url}
                 aria-describedby={errors.website_url ? 'website_url-error' : undefined}
@@ -749,51 +743,109 @@ export default function OrganizationFormMain({ organization = null }) {
           </div>
         </div>
 
-        {/* Status Section (Edit Mode Only) */}
-        {isEditMode && (
+        {/* Status Section */}
+        <div className="bg-whiteColor dark:bg-whiteColor-dark border border-borderColor dark:border-borderColor-dark rounded p-25px">
+          <h2 className="text-size-20 text-blackColor dark:text-blackColor-dark font-bold mb-20px">Status</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-20px">
+            <div>
+              <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => handleChange('status', e.target.value)}
+                className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded font-medium"
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
+                Plan Tier
+              </label>
+
+              <div className="w-full h-52px px-15px flex items-center bg-gray-50 dark:bg-gray-800 border border-borderColor dark:border-borderColor-dark rounded text-sm font-medium text-contentColor dark:text-contentColor-dark">
+                {organization?.plan_tier || 'basic'}
+              </div>
+
+              <p className="mt-6px text-xs text-contentColor dark:text-contentColor-dark opacity-70">
+                Pro and Enterprise plans are managed from organization settings.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Domain Settings */}
+        {isEditMode && organization?.id ? (
+          <OrgDomainPanel orgId={organization.id} />
+        ) : (
           <div className="bg-whiteColor dark:bg-whiteColor-dark border border-borderColor dark:border-borderColor-dark rounded p-25px">
-            <h2 className="text-size-20 text-blackColor dark:text-blackColor-dark font-bold mb-20px">Status</h2>
+            <h2 className="text-size-20 text-blackColor dark:text-blackColor-dark font-bold mb-20px">
+              Domain Settings
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-20px">
               <div>
                 <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
-                  Status
+                  Subdomain <span className="text-red-500">*</span>
                 </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => handleChange('status', e.target.value)}
-                  className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded font-medium"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="suspended">Suspended</option>
-                </select>
-              </div>
 
-              <div>
-                <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
-                  Plan Tier
-                </label>
-                <select
-                  value={formData.plan_tier ?? 'basic'}
-                  onChange={(e) => handleChange('plan_tier', e.target.value)}
-                  className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded font-medium"
-                >
-                  <option value="basic">Basic (subdomain only)</option>
-                  <option value="pro">Pro (custom domain enabled)</option>
-                  <option value="enterprise">Enterprise</option>
-                </select>
-                <p className="mt-6px text-xs text-contentColor dark:text-contentColor-dark opacity-70">
-                  Pro plan unlocks custom domain support for this organization.
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    value={formData.subdomain}
+                    aria-invalid={!!errors.subdomain}
+                    aria-describedby={errors.subdomain ? 'subdomain-error' : undefined}
+                    onChange={(e) =>
+                      handleChange(
+                        'subdomain',
+                        e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')
+                      )
+                    }
+                    className={`w-full h-52px pl-5 border rounded-l text-sm ${errors.subdomain
+                        ? 'border-red-500 dark:border-red-500'
+                        : 'border-borderColor dark:border-borderColor-dark'
+                      }`}
+                    placeholder="alphaacademy"
+                  />
+
+                  <div className="h-52px px-15px flex items-center border border-l-0 border-borderColor dark:border-borderColor-dark rounded-r bg-gray-50 text-sm text-contentColor">
+                    .lms360.in
+                  </div>
+                </div>
+
+                <ValidationError error={errors.subdomain} field="subdomain" />
+
+                <p className="mt-6px text-xs text-contentColor opacity-70">
+                  Organization will be accessible via this subdomain.
                 </p>
               </div>
+
+              {/* {formData.plan_tier !== 'basic' && (
+        <div>
+          <label className="text-contentColor dark:text-contentColor-dark mb-10px block text-sm font-medium">
+            Custom Domain
+          </label>
+
+          <input
+            type="text"
+            value={formData.custom_domain}
+            onChange={(e) => handleChange('custom_domain', e.target.value)}
+            className="w-full h-52px pl-5 border border-borderColor dark:border-borderColor-dark rounded text-sm"
+            placeholder="lms.example.com"
+          />
+
+          <p className="mt-6px text-xs text-contentColor opacity-70">
+            Custom domains are available for Pro and Enterprise plans.
+          </p>
+        </div>
+      )} */}
             </div>
           </div>
-        )}
-
-        {/* Domain Settings (Edit Mode Only) */}
-        {isEditMode && organization?.id && (
-          <OrgDomainPanel orgId={organization.id} />
         )}
 
         {/* Submit Button (Sticky Footer) */}
@@ -810,9 +862,8 @@ export default function OrganizationFormMain({ organization = null }) {
             <button
               type="submit"
               disabled={loading}
-              className={`px-25px py-10px text-size-15 text-whiteColor bg-primaryColor border border-primaryColor rounded hover:bg-primaryColor/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                loading ? 'cursor-wait' : ''
-              }`}
+              className={`px-25px py-10px text-size-15 text-whiteColor bg-primaryColor border border-primaryColor rounded hover:bg-primaryColor/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${loading ? 'cursor-wait' : ''
+                }`}
             >
               {loading ? (
                 <span className="flex items-center justify-center">

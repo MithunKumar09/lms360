@@ -302,6 +302,42 @@ export async function checkCodeExists(code, excludeId = null) {
 }
 
 /**
+ * Check if subdomain already exists
+ *
+ * @param {string} subdomain
+ * @param {string|null} excludeId
+ * @returns {Promise<boolean>}
+ */
+export async function checkSubdomainExists(subdomain, excludeId = null) {
+  const client = await getClient();
+
+  try {
+    let query = `
+      SELECT EXISTS(
+        SELECT 1
+        FROM organizations
+        WHERE LOWER(subdomain) = LOWER($1)
+          AND deleted_at IS NULL
+    `;
+
+    const params = [subdomain];
+
+    if (excludeId) {
+      query += ` AND id != $2`;
+      params.push(excludeId);
+    }
+
+    query += `) AS exists`;
+
+    const result = await client.query(query, params);
+
+    return result.rows[0]?.exists || false;
+  } finally {
+    client.release();
+  }
+}
+
+/**
  * List organizations with filters, pagination, and search
  * @param {Object} [filters] - Filter options
  * @param {string} [filters.search] - Full-text search query
