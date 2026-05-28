@@ -1,3 +1,4 @@
+//AdminParentAccessControlMain.js
 "use client";
 
 import { useState, useMemo } from "react";
@@ -10,10 +11,10 @@ function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-whiteColor dark:bg-whiteColor-dark rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-whiteColor dark:bg-whiteColor-dark border-b border-borderColor dark:border-borderColor-dark px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-blackColor dark:text-blackColor-dark">{title}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-borderColor bg-whiteColor shadow-2xl dark:border-borderColor-dark dark:bg-whiteColor-dark">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-borderColor bg-whiteColor/95 px-6 py-5 backdrop-blur-sm dark:border-borderColor-dark dark:bg-whiteColor-dark/95">
+          <h2 className="text-2xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">{title}</h2>
           <button
             onClick={onClose}
             className="text-contentColor dark:text-contentColor-dark hover:text-blackColor dark:hover:text-blackColor-dark"
@@ -23,7 +24,7 @@ function Modal({ isOpen, onClose, title, children }) {
             </svg>
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-6 md:p-8">{children}</div>
       </div>
     </div>
   );
@@ -267,14 +268,14 @@ export default function AdminParentAccessControlMain() {
   }, [filteredSettings]);
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-8">
       {/* Header */}
-      <div className="card border-0 shadow-sm mb-4">
-        <div className="card-body p-4">
-          <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div className="overflow-hidden rounded-3xl border border-borderColor bg-whiteColor shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
+        <div className="bg-gradient-to-r from-primaryColor/[0.04] to-transparent p-6 md:p-8 dark:from-primaryColor/[0.08]">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="h3 mb-2 fw-bold text-dark">Parent Access Control</h1>
-              <p className="text-muted mb-0 small">
+              <h1 className="text-3xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">Parent Access Control</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-contentColor dark:text-contentColor-dark">
                 Manage parent permissions and link parents to students
               </p>
             </div>
@@ -293,7 +294,7 @@ export default function AdminParentAccessControlMain() {
                 });
                 setShowSettingsModal(true);
               }}
-              className="px-4 py-2 text-sm font-semibold text-white bg-primaryColor rounded-md hover:bg-primaryColor/90 transition-colors"
+              className="inline-flex items-center justify-center rounded-2xl bg-primaryColor px-5 py-3 text-sm font-semibold text-whiteColor shadow-lg shadow-primaryColor/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primaryColor/90 hover:shadow-xl"
             >
               Create Access Setting
             </button>
@@ -302,10 +303,10 @@ export default function AdminParentAccessControlMain() {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 p-4 bg-whiteColor dark:bg-whiteColor-dark rounded-md border-2 border-borderColor dark:border-borderColor-dark">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="rounded-3xl border border-borderColor bg-lightGrey4/40 p-5 dark:border-borderColor-dark dark:bg-primaryColor/[0.03] md:p-6">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           <div>
-            <label className="block mb-2 text-sm font-semibold text-blackColor dark:text-blackColor-dark">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Search
             </label>
             <input
@@ -313,17 +314,17 @@ export default function AdminParentAccessControlMain() {
               placeholder="Search by parent or student name/email..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="w-full py-2 px-4 text-sm focus:outline-none text-contentColor dark:text-contentColor-dark bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
             />
           </div>
           <div>
-            <label className="block mb-2 text-sm font-semibold text-blackColor dark:text-blackColor-dark">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Filter by Parent
             </label>
             <select
               value={filters.parent_id}
               onChange={(e) => setFilters({ ...filters, parent_id: e.target.value })}
-              className="w-full py-2 px-4 text-sm focus:outline-none text-contentColor dark:text-contentColor-dark bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
             >
               <option value="">All Parents</option>
               {parents.map((parent) => (
@@ -337,19 +338,19 @@ export default function AdminParentAccessControlMain() {
       </div>
 
       {/* Parents List - Quick Link Actions */}
-      <div className="mb-6 p-4 bg-whiteColor dark:bg-whiteColor-dark rounded-md border-2 border-borderColor dark:border-borderColor-dark">
-        <h2 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-4">Parents</h2>
+      <div className="rounded-3xl border border-borderColor bg-lightGrey4/40 p-5 dark:border-borderColor-dark dark:bg-primaryColor/[0.03] md:p-6">
+        <h2 className="mb-5 text-xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">Parents</h2>
         {parents.length === 0 ? (
           <p className="text-sm text-contentColor dark:text-contentColor-dark">No parents found</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {parents.map((parent) => (
               <div
                 key={parent.id}
-                className="p-4 border-2 border-borderColor dark:border-borderColor-dark rounded-md hover:shadow-lg transition-shadow"
+                className="group rounded-3xl border border-borderColor bg-lightGrey4/30 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primaryColor/20 hover:shadow-xl dark:border-borderColor-dark dark:bg-primaryColor/[0.03]"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden bg-darkdeep4 flex-shrink-0 flex items-center justify-center">
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primaryColor/10 ring-4 ring-primaryColor/5">
                     {parent.avatar_url ? (
                       <img
                         src={parent.avatar_url}
@@ -363,15 +364,15 @@ export default function AdminParentAccessControlMain() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-blackColor dark:text-blackColor-dark truncate">
+                    <h3 className="truncate text-base font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
                       {`${parent.first_name || ""} ${parent.last_name || ""}`.trim() || parent.email || "Unknown"}
                     </h3>
-                    <p className="text-xs text-contentColor dark:text-contentColor-dark truncate">{parent.email}</p>
+                    <p className="mt-1 truncate text-xs leading-relaxed text-contentColor dark:text-contentColor-dark">{parent.email}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => handleLinkParent(parent)}
-                  className="w-full px-3 py-2 text-xs font-semibold text-white bg-primaryColor rounded-md hover:bg-primaryColor/90 transition-colors"
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-primaryColor px-4 py-3 text-sm font-semibold text-whiteColor shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-primaryColor/90"
                 >
                   Link Students
                 </button>
@@ -382,24 +383,28 @@ export default function AdminParentAccessControlMain() {
       </div>
 
       {/* Access Settings List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Org-Wide Settings */}
         {groupedSettings.orgWide.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-3">Organization-Wide Settings</h2>
+            <h2 className="mb-4 text-xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">Organization-Wide Settings</h2>
             <div className="space-y-3">
               {groupedSettings.orgWide.map((setting) => (
                 <div
                   key={setting.id}
-                  className="bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md p-4"
+                  className="rounded-3xl border border-borderColor bg-whiteColor p-5 shadow-sm transition-all duration-300 hover:border-primaryColor/20 hover:shadow-lg dark:border-borderColor-dark dark:bg-whiteColor-dark"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-blackColor dark:text-blackColor-dark mb-2">
+                      <p className="mb-4 text-base font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
                         Default Settings for All Parents
                       </p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                        <span className={setting.canViewProgress ? "text-green-600" : "text-red-600"}>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        <span className={`inline-flex items-center rounded-xl px-3 py-2 text-xs font-semibold ${
+  setting.canViewProgress
+    ? "bg-green-100 text-green-700"
+    : "bg-red-100 text-red-700"
+}`}>
                           Progress: {setting.canViewProgress ? "✓" : "✗"}
                         </span>
                         <span className={setting.canViewAttendance ? "text-green-600" : "text-red-600"}>
@@ -421,7 +426,7 @@ export default function AdminParentAccessControlMain() {
                     </div>
                     <button
                       onClick={() => handleManageSettings(setting)}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-primaryColor rounded-md hover:bg-primaryColor/90"
+                      className="inline-flex items-center justify-center rounded-xl bg-primaryColor px-4 py-2 text-xs font-semibold text-whiteColor shadow-md transition-all duration-300 hover:bg-primaryColor/90"
                     >
                       Edit
                     </button>
@@ -435,20 +440,24 @@ export default function AdminParentAccessControlMain() {
         {/* Parent-Specific Settings */}
         {groupedSettings.parentSpecific.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-3">Parent-Specific Settings</h2>
+            <h2 className="mb-4 text-xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">Parent-Specific Settings</h2>
             <div className="space-y-3">
               {groupedSettings.parentSpecific.map((setting) => (
                 <div
                   key={setting.id}
-                  className="bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md p-4"
+                  className="rounded-3xl border border-borderColor bg-whiteColor p-5 shadow-sm transition-all duration-300 hover:border-primaryColor/20 hover:shadow-lg dark:border-borderColor-dark dark:bg-whiteColor-dark"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-blackColor dark:text-blackColor-dark mb-1">
                         {setting.parentName || setting.parentEmail}
                       </p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                        <span className={setting.canViewProgress ? "text-green-600" : "text-red-600"}>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        <span className={`inline-flex items-center rounded-xl px-3 py-2 text-xs font-semibold ${
+  setting.canViewProgress
+    ? "bg-green-100 text-green-700"
+    : "bg-red-100 text-red-700"
+}`}>
                           Progress: {setting.canViewProgress ? "✓" : "✗"}
                         </span>
                         <span className={setting.canViewAttendance ? "text-green-600" : "text-red-600"}>
@@ -470,7 +479,7 @@ export default function AdminParentAccessControlMain() {
                     </div>
                     <button
                       onClick={() => handleManageSettings(setting)}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-primaryColor rounded-md hover:bg-primaryColor/90"
+                      className="inline-flex items-center justify-center rounded-xl bg-primaryColor px-4 py-2 text-xs font-semibold text-whiteColor shadow-md transition-all duration-300 hover:bg-primaryColor/90"
                     >
                       Edit
                     </button>
@@ -484,20 +493,24 @@ export default function AdminParentAccessControlMain() {
         {/* Student-Specific Settings */}
         {groupedSettings.studentSpecific.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-3">Student-Specific Overrides</h2>
+            <h2 className="mb-4 text-xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">Student-Specific Overrides</h2>
             <div className="space-y-3">
               {groupedSettings.studentSpecific.map((setting) => (
                 <div
                   key={setting.id}
-                  className="bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md p-4"
+                  className="rounded-3xl border border-borderColor bg-whiteColor p-5 shadow-sm transition-all duration-300 hover:border-primaryColor/20 hover:shadow-lg dark:border-borderColor-dark dark:bg-whiteColor-dark"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-blackColor dark:text-blackColor-dark mb-1">
                         {setting.parentName || setting.parentEmail} → {setting.studentName || setting.studentEmail}
                       </p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                        <span className={setting.canViewProgress ? "text-green-600" : "text-red-600"}>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        <span className={`inline-flex items-center rounded-xl px-3 py-2 text-xs font-semibold ${
+  setting.canViewProgress
+    ? "bg-green-100 text-green-700"
+    : "bg-red-100 text-red-700"
+}`}>
                           Progress: {setting.canViewProgress ? "✓" : "✗"}
                         </span>
                         <span className={setting.canViewAttendance ? "text-green-600" : "text-red-600"}>
@@ -519,7 +532,7 @@ export default function AdminParentAccessControlMain() {
                     </div>
                     <button
                       onClick={() => handleManageSettings(setting)}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-primaryColor rounded-md hover:bg-primaryColor/90"
+                      className="inline-flex items-center justify-center rounded-xl bg-primaryColor px-4 py-2 text-xs font-semibold text-whiteColor shadow-md transition-all duration-300 hover:bg-primaryColor/90"
                     >
                       Edit
                     </button>
@@ -532,7 +545,7 @@ export default function AdminParentAccessControlMain() {
 
         {/* Empty State */}
         {!isLoading && filteredSettings.length === 0 && (
-          <div className="text-center py-12 bg-whiteColor dark:bg-whiteColor-dark rounded-md border-2 border-borderColor dark:border-borderColor-dark">
+          <div className="rounded-3xl border border-dashed border-borderColor bg-whiteColor px-6 py-14 text-center shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
             <p className="text-contentColor dark:text-contentColor-dark">
               No access settings found. Create one to get started.
             </p>
@@ -550,9 +563,9 @@ export default function AdminParentAccessControlMain() {
         title={`Link Students to ${selectedParent ? `${selectedParent.first_name} ${selectedParent.last_name}`.trim() : 'Parent'}`}
       >
         {selectedParent && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="block mb-2 text-sm font-semibold text-blackColor dark:text-blackColor-dark">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
                 Select Students
               </label>
               <div className="max-h-96 overflow-y-auto border-2 border-borderColor dark:border-borderColor-dark rounded-md p-4">
@@ -619,15 +632,15 @@ export default function AdminParentAccessControlMain() {
         }}
         title="Manage Access Settings"
       >
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="block mb-2 text-sm font-semibold text-blackColor dark:text-blackColor-dark">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Parent (Optional - leave empty for org-wide)
             </label>
             <select
               value={settingsForm.parent_user_id}
               onChange={(e) => setSettingsForm({ ...settingsForm, parent_user_id: e.target.value })}
-              className="w-full py-2 px-4 text-sm focus:outline-none text-contentColor dark:text-contentColor-dark bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
             >
               <option value="">Organization-Wide Default</option>
               {parents.map((parent) => (
@@ -640,13 +653,13 @@ export default function AdminParentAccessControlMain() {
 
           {settingsForm.parent_user_id && (
             <div>
-              <label className="block mb-2 text-sm font-semibold text-blackColor dark:text-blackColor-dark">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
                 Student (Optional - leave empty for parent default)
               </label>
               <select
                 value={settingsForm.student_user_id}
                 onChange={(e) => setSettingsForm({ ...settingsForm, student_user_id: e.target.value })}
-                className="w-full py-2 px-4 text-sm focus:outline-none text-contentColor dark:text-contentColor-dark bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md"
+                className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
               >
                 <option value="">Parent Default</option>
                 {students.map((student) => (

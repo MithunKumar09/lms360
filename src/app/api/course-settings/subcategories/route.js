@@ -29,29 +29,29 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     // Accept both categoryId (camelCase) and category_id (snake_case) for compatibility
     const categoryId = searchParams.get('categoryId') || searchParams.get('category_id') || undefined;
-    
+
     // Validate: category_id is required for subcategories
-    if (!categoryId) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Category ID is required to fetch subcategories',
-          data: [],
-          pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false },
-        },
-        { status: 400 }
-      );
-    }
-    
+    // if (!categoryId) {
+    //   return NextResponse.json(
+    //     {
+    //       success: false,
+    //       error: 'Category ID is required to fetch subcategories',
+    //       data: [],
+    //       pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false },
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
+
     const filters = {
-      category_id: categoryId, // Required: subcategories must be filtered by category
+      category_id: categoryId || undefined, // Required: subcategories must be filtered by category
       // For admin, use their orgId (shows global + org-specific)
       // For vendor, don't set org_id (shows all subcategories for the selected category: global + all admin-created)
       // For superadmin, use query param or null (shows global or all based on query)
-      org_id: userRole === 'admin' 
-        ? session.user.orgId 
-        : (userRole === 'vendor' 
-          ? undefined  // Vendors see all subcategories for the selected category (global + all admin-created)
+      org_id: userRole === 'admin'
+        ? session.user.orgId
+        : (userRole === 'vendor'
+          ? session.user.orgId  // Vendors see all subcategories for the selected category (global + all admin-created)
           : (searchParams.get('org_id') || null)),
       status: searchParams.get('status') ? parseInt(searchParams.get('status'), 10) : undefined,
       search: searchParams.get('search') || searchParams.get('q'),

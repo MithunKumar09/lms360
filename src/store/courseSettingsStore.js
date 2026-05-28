@@ -1,3 +1,4 @@
+//src\store\courseSettingsStore.js
 /**
  * Course Settings Store
  * 

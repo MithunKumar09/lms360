@@ -92,20 +92,20 @@ const AssignCoursePrimary = () => {
 
 
   return (
-    <div className="p-10px md:px-10 md:py-50px mb-30px bg-whiteColor dark:bg-whiteColor-dark shadow-accordion dark:shadow-accordion-dark rounded-5">
+    <div className="mb-30px rounded-3xl border border-borderColor bg-whiteColor p-5 shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark md:p-8">
       {/* Header */}
-      <div className="mb-6 pb-5 border-b-2 border-borderColor dark:border-borderColor-dark flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-8 flex flex-col gap-6 rounded-3xl border border-borderColor bg-gradient-to-r from-primaryColor/[0.04] to-transparent p-6 dark:border-borderColor-dark dark:from-primaryColor/[0.08] lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-blackColor dark:text-blackColor-dark">
+          <h2 className="text-3xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
             Assign Courses
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-contentColor dark:text-contentColor-dark">
             Assign existing courses to additional cohorts, classes, or subjects
           </p>
         </div>
         <button
           onClick={openReportModal}
-          className="px-4 py-2 bg-primaryColor text-whiteColor rounded hover:bg-primaryColor/90 transition-all duration-200 text-sm font-medium transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:ring-offset-2"
+          className="inline-flex items-center justify-center rounded-2xl bg-primaryColor px-5 py-3 text-sm font-semibold text-whiteColor shadow-lg shadow-primaryColor/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primaryColor/90 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primaryColor focus:ring-offset-2"
           aria-label="View assignment report"
         >
           View Report
@@ -113,17 +113,54 @@ const AssignCoursePrimary = () => {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg transition-all duration-300">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <div className="rounded-2xl border border-borderColor bg-whiteColor p-5 shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
+    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
+      Total Courses
+    </p>
+    <h3 className="mt-3 text-3xl font-bold text-blackColor dark:text-blackColor-dark">
+      {pagination.total || courses.length || 0}
+    </h3>
+  </div>
+
+  <div className="rounded-2xl border border-borderColor bg-whiteColor p-5 shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
+    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
+      Cohorts
+    </p>
+    <h3 className="mt-3 text-3xl font-bold text-blackColor dark:text-blackColor-dark">
+      {filterOptions.cohorts.length}
+    </h3>
+  </div>
+
+  <div className="rounded-2xl border border-borderColor bg-whiteColor p-5 shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
+    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
+      Subjects
+    </p>
+    <h3 className="mt-3 text-3xl font-bold text-blackColor dark:text-blackColor-dark">
+      {filterOptions.subjects.length}
+    </h3>
+  </div>
+
+  <div className="rounded-2xl border border-borderColor bg-whiteColor p-5 shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
+    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
+      Instructors
+    </p>
+    <h3 className="mt-3 text-3xl font-bold text-blackColor dark:text-blackColor-dark">
+      {filterOptions.instructors.length}
+    </h3>
+  </div>
+</div>
+      <div className="mb-8 rounded-3xl border border-borderColor bg-lightGrey4/40 p-5 transition-all duration-300 dark:border-borderColor-dark dark:bg-primaryColor/[0.03] md:p-6">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
           {/* Cohort Filter */}
           <div>
-            <label className="block text-sm font-medium text-blackColor dark:text-blackColor-dark mb-2">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Cohort
             </label>
             <select
               value={filters.cohortId || ''}
               onChange={(e) => handleFilterChange('cohortId', e.target.value || null)}
-              className="w-full px-3 py-2 border border-borderColor dark:border-borderColor-dark rounded bg-whiteColor dark:bg-whiteColor-dark text-blackColor dark:text-blackColor-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-primaryColor"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
               aria-label="Filter by cohort"
             >
               <option value="">All Cohorts</option>
@@ -137,13 +174,13 @@ const AssignCoursePrimary = () => {
 
           {/* Class Filter */}
           <div>
-            <label className="block text-sm font-medium text-blackColor dark:text-blackColor-dark mb-2">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Class
             </label>
             <select
               value={filters.classId || ''}
               onChange={(e) => handleFilterChange('classId', e.target.value || null)}
-              className="w-full px-3 py-2 border border-borderColor dark:border-borderColor-dark rounded bg-whiteColor dark:bg-whiteColor-dark text-blackColor dark:text-blackColor-dark"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
             >
               <option value="">All Classes</option>
               {filterOptions.classes.map((cls, idx) => (
@@ -156,13 +193,13 @@ const AssignCoursePrimary = () => {
 
           {/* Subject Filter */}
           <div>
-            <label className="block text-sm font-medium text-blackColor dark:text-blackColor-dark mb-2">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Subject
             </label>
             <select
               value={filters.subjectId || ''}
               onChange={(e) => handleFilterChange('subjectId', e.target.value || null)}
-              className="w-full px-3 py-2 border border-borderColor dark:border-borderColor-dark rounded bg-whiteColor dark:bg-whiteColor-dark text-blackColor dark:text-blackColor-dark"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
             >
               <option value="">All Subjects</option>
               {filterOptions.subjects.map((subject, idx) => (
@@ -175,13 +212,13 @@ const AssignCoursePrimary = () => {
 
           {/* Instructor Filter */}
           <div>
-            <label className="block text-sm font-medium text-blackColor dark:text-blackColor-dark mb-2">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Instructor
             </label>
             <select
               value={filters.instructorId || ''}
               onChange={(e) => handleFilterChange('instructorId', e.target.value || null)}
-              className="w-full px-3 py-2 border border-borderColor dark:border-borderColor-dark rounded bg-whiteColor dark:bg-whiteColor-dark text-blackColor dark:text-blackColor-dark"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
             >
               <option value="">All Instructors</option>
               {filterOptions.instructors.map((instructor) => (
@@ -194,14 +231,14 @@ const AssignCoursePrimary = () => {
 
           {/* Date Range Filter */}
           <div>
-            <label className="block text-sm font-medium text-blackColor dark:text-blackColor-dark mb-2">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-contentColor dark:text-contentColor-dark">
               Created Date
             </label>
             <input
               type="date"
               value={filters.createdFrom || ''}
               onChange={(e) => handleFilterChange('createdFrom', e.target.value || null)}
-              className="w-full px-3 py-2 border border-borderColor dark:border-borderColor-dark rounded bg-whiteColor dark:bg-whiteColor-dark text-blackColor dark:text-blackColor-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-primaryColor"
+              className="h-12 w-full rounded-2xl border border-borderColor bg-whiteColor px-4 text-sm font-medium text-blackColor shadow-sm transition-all duration-300 focus:border-primaryColor focus:outline-none focus:ring-4 focus:ring-primaryColor/10 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
               placeholder="From Date"
               aria-label="Filter by created date from"
             />
@@ -215,10 +252,10 @@ const AssignCoursePrimary = () => {
           filters.instructorId ||
           filters.createdFrom ||
           filters.createdTo) && (
-          <div className="mt-4">
+          <div className="mt-6 flex justify-end">
             <button
               onClick={handleClearFilters}
-              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blackColor dark:hover:text-blackColor-dark transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:ring-offset-2 rounded"
+              className="rounded-2xl border border-borderColor bg-whiteColor px-5 py-2.5 text-sm font-medium text-contentColor shadow-sm transition-all duration-300 hover:border-primaryColor/20 hover:text-blackColor dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-contentColor-dark dark:hover:text-blackColor-dark"
               aria-label="Clear all filters"
             >
               Clear Filters
@@ -229,7 +266,7 @@ const AssignCoursePrimary = () => {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {Array.from({ length: 3 }).map((_, idx) => (
             <CourseCardSkeleton key={idx} />
           ))}
@@ -251,11 +288,11 @@ const AssignCoursePrimary = () => {
           {courses.length === 0 ? (
             <NoData message="No courses found. Try adjusting your filters." />
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {courses.map((course, idx) => (
                 <div
                   key={course.id}
-                  className="animate-fade-in"
+                  className="animate-fade-in rounded-3xl border border-transparent transition-all duration-300"
                   style={{
                     animationDelay: `${idx * 0.1}s`,
                     animationFillMode: 'both',
@@ -269,20 +306,20 @@ const AssignCoursePrimary = () => {
 
           {/* Pagination */}
           {pagination.totalPages > 1 && (
-            <div className="mt-6 flex justify-center items-center gap-2">
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-borderColor bg-lightGrey4/40 p-4 dark:border-borderColor-dark dark:bg-primaryColor/[0.03]">
               <button
                 disabled={pagination.page === 1}
-                className="px-4 py-2 border border-borderColor dark:border-borderColor-dark rounded disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:ring-offset-2"
+                className="rounded-2xl border border-borderColor bg-whiteColor px-5 py-2.5 text-sm font-semibold text-blackColor shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primaryColor/20 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
                 aria-label="Go to previous page"
               >
                 Previous
               </button>
-              <span className="text-sm text-gray-600 dark:text-gray-400" aria-live="polite">
+              <span className="text-sm font-medium text-contentColor dark:text-contentColor-dark" aria-live="polite">
                 Page {pagination.page} of {pagination.totalPages}
               </span>
               <button
                 disabled={pagination.page === pagination.totalPages}
-                className="px-4 py-2 border border-borderColor dark:border-borderColor-dark rounded disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:ring-offset-2"
+                className="rounded-2xl border border-borderColor bg-whiteColor px-5 py-2.5 text-sm font-semibold text-blackColor shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primaryColor/20 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:border-borderColor-dark dark:bg-whiteColor-dark dark:text-blackColor-dark"
                 aria-label="Go to next page"
               >
                 Next

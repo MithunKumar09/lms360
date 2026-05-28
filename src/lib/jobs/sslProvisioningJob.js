@@ -80,8 +80,8 @@ async function createCloudflareCustomHostname(domain) {
         const listData = await listRes.json();
         const existingId = listData.result?.[0]?.id ?? null;
         return { success: true, hostnameId: existingId, alreadyExists: true, error: null };
-      } catch {
-        // Could not fetch existing ID — return null so caller can handle gracefully
+      } catch (listErr) {
+        console.error(JSON.stringify({ event: 'ssl_provision_list_existing_failed', domain, error: listErr.message }));
         return { success: true, hostnameId: null, alreadyExists: true, error: null };
       }
     }
@@ -136,8 +136,9 @@ export async function triggerSslProvisioning(orgId, domain) {
         [result.hostnameId, orgId]
       );
       console.log(JSON.stringify({ event: 'ssl_provision_triggered', orgId, domain, hostnameId: result.hostnameId }));
+    } else if (result.alreadyExists) {
+      console.warn(JSON.stringify({ event: 'ssl_provision_already_exists_no_id', orgId, domain, warning: 'hostnameId null — ssl sync job cannot poll until ID is recovered' }));
     }
-    // alreadyExists with null hostnameId: ssl_status already 'provisioning' from verification step
   } catch (err) {
     console.error(`SSL provisioning error for org ${orgId}, domain ${domain}:`, err);
     await query(
@@ -187,7 +188,11 @@ export async function runSslStatusSyncJob() {
       );
       const data = await res.json();
 
-      if (!data.success) continue;
+      if (!data.success) {
+        const cfErr = data.errors?.[0]?.message ?? 'unknown';
+        console.error(JSON.stringify({ event: 'ssl_sync_cf_api_error', orgId: org.id, domain: org.custom_domain, hostnameId: org.ssl_cloudflare_hostname_id, cfError: cfErr, cfCode: data.errors?.[0]?.code ?? null }));
+        continue;
+      }
 
       const cfStatus = data.result?.status;
       const sslStatus = data.result?.ssl?.status;
@@ -207,8 +212,9 @@ export async function runSslStatusSyncJob() {
         );
         console.log(JSON.stringify({ event: 'ssl_failed', orgId: org.id, domain: org.custom_domain, reason: errMsg }));
         failed++;
+      } else {
+        console.log(JSON.stringify({ event: 'ssl_sync_still_provisioning', orgId: org.id, domain: org.custom_domain, cfStatus, sslStatus }));
       }
-      // Otherwise still provisioning — check again next cycle
     } catch (err) {
       console.error(`SSL status sync error for org ${org.id}:`, err.message);
     }

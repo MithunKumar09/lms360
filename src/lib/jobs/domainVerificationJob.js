@@ -39,10 +39,25 @@ async function verifyOrgDomain(org) {
   let txtRecords;
   try {
     txtRecords = await dns.resolveTxt(txtHostname);
-  } catch {
-    // DNS lookup failed (NXDOMAIN, timeout, etc.) — not verified yet
+  } catch (dnsErr) {
     await updateAttempt();
-    console.log(JSON.stringify({ event: 'domain_verify_dns_miss', orgId: org.id, domain: org.custom_domain }));
+    const dnsFailureReason = `DNS lookup failed for ${txtHostname}: ${dnsErr.code ?? dnsErr.message}`;
+    await query(
+      `UPDATE organizations
+       SET last_verification_failure_reason = $1,
+           last_dns_response = $2
+       WHERE id = $3`,
+      [dnsFailureReason, dnsErr.code ?? dnsErr.message, org.id]
+    ).catch(() => {});
+    console.log(JSON.stringify({
+      event: 'domain_verify_dns_error',
+      orgId: org.id,
+      domain: org.custom_domain,
+      txtHostname,
+      dnsErrorCode: dnsErr.code ?? null,
+      dnsErrorMessage: dnsErr.message,
+      failureReason: dnsFailureReason,
+    }));
     return { verified: false, orgId: org.id, domain: org.custom_domain };
   }
 
@@ -50,8 +65,37 @@ async function verifyOrgDomain(org) {
   const flatRecords = txtRecords.flat();
   const isVerified = flatRecords.includes(org.domain_verification_token);
 
+  console.log(JSON.stringify({
+    event: 'domain_verify_dns_lookup',
+    orgId: org.id,
+    domain: org.custom_domain,
+    txtHostname,
+    foundRecords: flatRecords,
+    expectedToken: org.domain_verification_token,
+    isVerified,
+  }));
+
   if (!isVerified) {
     await updateAttempt();
+    const mismatchReason = flatRecords.length === 0
+      ? `TXT record not found at ${txtHostname}`
+      : `TXT token mismatch at ${txtHostname}. Expected: ${org.domain_verification_token}. Found: [${flatRecords.join(', ')}]`;
+    await query(
+      `UPDATE organizations
+       SET last_verification_failure_reason = $1,
+           last_dns_response = $2
+       WHERE id = $3`,
+      [mismatchReason, JSON.stringify(flatRecords), org.id]
+    ).catch(() => {});
+    console.log(JSON.stringify({
+      event: 'domain_verify_token_mismatch',
+      orgId: org.id,
+      domain: org.custom_domain,
+      txtHostname,
+      expectedToken: org.domain_verification_token,
+      foundRecords: flatRecords,
+      failureReason: mismatchReason,
+    }));
     return { verified: false, orgId: org.id, domain: org.custom_domain };
   }
 

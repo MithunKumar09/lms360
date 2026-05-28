@@ -239,10 +239,10 @@ export async function getSubcategoriesByCategory(category_id, org_id = null) {
     const params = [category_id];
 
     // Admins can only delete their own org's data, not superadmin data (org_id IS NULL)
-    if (org_id !== null) {
-      queryText += ' AND org_id = $2';
-      params.push(org_id);
-    }
+if (org_id !== null) {
+  queryText += ' AND (org_id = $2 OR org_id IS NULL)';
+  params.push(org_id);
+}
 
     queryText += ' ORDER BY name ASC';
 
