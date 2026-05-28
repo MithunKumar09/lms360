@@ -15,19 +15,19 @@ import useInvitiesStore from "@/store/invitiesStore.js";
 import { useBulkAction } from "@/hooks/api/useBulkOperations.js";
 import apiClient from "@/lib/api/client.js";
 import EditUserModal from "./EditUserModal.js";
-import { 
-  FiUserPlus, 
-  FiUpload, 
-  FiSearch, 
-  FiFilter, 
-  FiCheckCircle, 
-  FiXCircle, 
-  FiEye, 
-  FiMail, 
-  FiKey, 
-  FiShield, 
-  FiUserX, 
-  FiUserCheck, 
+import {
+  FiUserPlus,
+  FiUpload,
+  FiSearch,
+  FiFilter,
+  FiCheckCircle,
+  FiXCircle,
+  FiEye,
+  FiMail,
+  FiKey,
+  FiShield,
+  FiUserX,
+  FiUserCheck,
   FiLogOut,
   FiTrash2,
   FiChevronLeft,
@@ -39,8 +39,8 @@ import {
   FiSend,
   FiEdit3
 } from "react-icons/fi";
-import { 
-  HiOutlineBadgeCheck, 
+import {
+  HiOutlineBadgeCheck,
   HiOutlineXCircle,
   HiOutlineClock
 } from "react-icons/hi";
@@ -77,7 +77,7 @@ function ActionButton({ onClick, children, disabled, variant = "outline-secondar
 
 function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) return null;
-  
+
   return (
     <div className="users-modal modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1055 }} onClick={(e) => {
       // Only close if clicking directly on the backdrop, not on bubbled events
@@ -114,7 +114,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
   // View state from Zustand store
   const currentView = useInvitiesStore((state) => state.currentView);
   const setView = useInvitiesStore((state) => state.setView);
-  
+
   // Fetch counts
   const { count: pendingInvitesCount } = useInvitiesCount({ enabled: true });
   const { count: verifiedUsersCount } = useVerifiedUsersCount({ enabled: true });
@@ -141,14 +141,14 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
     pageSize: 20,
     sort: "created_at:desc",
   });
-  
+
   // Row selection state
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
-  
+
   // Track which user is being deleted (to show loading state per user)
   const [deletingUserId, setDeletingUserId] = useState(null);
-  
+
   // Bulk operations
   const bulkAction = useBulkAction();
 
@@ -160,7 +160,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
       page: String(filters.page),
       pageSize: String(filters.pageSize),
     };
-    
+
     if (qDebounced) params.q = qDebounced;
     if (filters.role) params.role = filters.role;
     if (filters.status) params.status = filters.status;
@@ -171,7 +171,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
     if (filters.dateFrom) params.dateFrom = filters.dateFrom;
     if (filters.dateTo) params.dateTo = filters.dateTo;
     if (filters.sort) params.sort = filters.sort;
-    
+
     return params;
   }, [filters, qDebounced, isSuperadmin, isAdmin, isInstructor]);
 
@@ -210,32 +210,32 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
   const setFilter = useCallback((k, v) => {
     setFilters((f) => ({ ...f, [k]: v, page: k === "page" ? v : 1 }));
   }, []);
-  
+
   const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
   }, []);
-  
+
   const handleClearFilters = useCallback((clearedFilters) => {
     setFilters(clearedFilters);
   }, []);
-  
+
   // Row selection handlers
   const handleSelectUser = useCallback((userId) => {
-    setSelectedUsers((prev) => 
-      prev.includes(userId) 
+    setSelectedUsers((prev) =>
+      prev.includes(userId)
         ? prev.filter(id => id !== userId)
         : [...prev, userId]
     );
   }, []);
-  
+
   const handleSelectAll = useCallback(() => {
     setSelectedUsers(items.map(u => u.id));
   }, [items]);
-  
+
   const handleDeselectAll = useCallback(() => {
     setSelectedUsers([]);
   }, []);
-  
+
   // Bulk action handler
   const handleBulkAction = useCallback(async (action, userIds, options = {}) => {
     try {
@@ -289,7 +289,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
     try {
       const params = new URLSearchParams();
       params.set('format', format);
-      
+
       // Add current filters
       if (filters.q) params.set('q', filters.q);
       if (filters.role) params.set('role', filters.role);
@@ -311,7 +311,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
   // Show Invities Management if current view is 'invities'
   if (currentView === 'invities') {
     return (
-      <div className="w-100">
+      <div className="w-100 d-flex flex-column gap-4">
         {/* Navigation Tabs */}
         <div className="card mb-4 border-0 shadow-sm">
           <div className="card-body p-3">
@@ -333,7 +333,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                 <FiSend size={16} className="me-1" />
                 Invities
                 {pendingInvitesCount > 0 && (
-                  <span 
+                  <span
                     className="position-absolute badge rounded-pill bg-danger text-white d-flex align-items-center justify-content-center"
                     style={{
                       fontSize: '0.7rem',
@@ -363,13 +363,57 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
   }
 
   return (
-    <div className="w-100">
+    <div className="w-100 d-flex flex-column gap-4">
+      {/* Header */}
+      <div className="rounded-4 border bg-gradient-to-r from-primaryColor/[0.04] to-transparent p-4 p-lg-5 shadow-sm dark:from-primaryColor/[0.08]">
+        <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-4">
+          <div>
+            {/* <h1 className="mb-2 fw-bold text-dark" style={{ fontSize: "2rem", letterSpacing: "-0.03em" }}>
+        Users Management
+      </h1> */}
+
+            <p className="mb-0 text-muted" style={{ maxWidth: "700px", lineHeight: 1.7 }}>
+              Manage platform users, invitations, permissions, verification states, sessions, and access controls.
+            </p>
+          </div>
+
+          <div className="d-flex gap-3 flex-wrap">
+            <div className="rounded-4 border bg-whiteColor px-4 py-3 shadow-sm">
+              <div className="text-uppercase text-muted fw-semibold mb-1" style={{ fontSize: "0.7rem", letterSpacing: "0.12em" }}>
+                Total Users
+              </div>
+              <div className="fw-bold text-dark" style={{ fontSize: "1.6rem" }}>
+                {total}
+              </div>
+            </div>
+
+            <div className="rounded-4 border bg-whiteColor px-4 py-3 shadow-sm">
+              <div className="text-uppercase text-muted fw-semibold mb-1" style={{ fontSize: "0.7rem", letterSpacing: "0.12em" }}>
+                Verified
+              </div>
+              <div className="fw-bold text-success" style={{ fontSize: "1.6rem" }}>
+                {verifiedUsersCount}
+              </div>
+            </div>
+
+            <div className="rounded-4 border bg-whiteColor px-4 py-3 shadow-sm">
+              <div className="text-uppercase text-muted fw-semibold mb-1" style={{ fontSize: "0.7rem", letterSpacing: "0.12em" }}>
+                Pending
+              </div>
+              <div className="fw-bold text-danger" style={{ fontSize: "1.6rem" }}>
+                {unverifiedUsersCount}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Action Buttons */}
-      <div className="d-flex justify-content-end align-items-center gap-2 mb-4 flex-wrap">
+      <div className="d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center gap-4 mb-4 p-4 rounded-4 border bg-whiteColor dark:bg-whiteColor-dark shadow-sm">
         <div className="dropdown">
           <button
             type="button"
-            className="btn btn-outline-secondary d-inline-flex align-items-center gap-2"
+            className="btn d-inline-flex align-items-center gap-2 rounded-4 border-0 px-4 py-3 shadow-sm"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
@@ -406,7 +450,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
         <button
           type="button"
           onClick={() => setShowBulkImportModal(true)}
-          className="btn btn-outline-primary d-inline-flex align-items-center gap-2"
+          className="btn btn-outline-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold"
         >
           <FiUpload size={18} />
           Bulk Import
@@ -414,7 +458,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
         <button
           type="button"
           onClick={() => setShowCreateModal(true)}
-          className="btn btn-primary d-inline-flex align-items-center gap-2"
+          className="btn btn-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold shadow-lg"
         >
           <FiUserPlus size={18} />
           Create New User
@@ -432,19 +476,19 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
       )}
 
       {/* Tabs */}
-      <div className="card mb-4 border-0 shadow-sm">
-        <div className="card-body p-3">
-          <div className="d-flex gap-2 flex-wrap" role="group">
+      <div className="border-0 rounded-4 shadow-sm overflow-hidden bg-whiteColor dark:bg-whiteColor-dark">
+        <div className="p-4">
+          <div className="d-flex gap-3 flex-wrap" role="group">
             <button
               type="button"
-              className={`btn d-inline-flex align-items-center position-relative ${filters.verified === "true" ? "btn-primary" : "btn-outline-primary"}`}
+              className={`btn d-inline-flex align-items-center rounded-4 px-4 py-3 fw-semibold shadow-sm position-relative ${filters.verified === "true" ? "btn-primary" : "btn-outline-primary"}`}
               onClick={() => setFilter("verified", "true")}
               style={{ paddingRight: verifiedUsersCount > 0 ? '2.5rem' : undefined }}
             >
               <HiOutlineBadgeCheck size={16} className="me-1" />
               Verified
               {verifiedUsersCount > 0 && (
-                <span 
+                <span
                   className="position-absolute badge rounded-pill bg-danger text-white d-flex align-items-center justify-content-center"
                   style={{
                     fontSize: '0.7rem',
@@ -472,7 +516,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
               <HiOutlineXCircle size={16} className="me-1" />
               Unverified
               {unverifiedUsersCount > 0 && (
-                <span 
+                <span
                   className="position-absolute badge rounded-pill bg-danger text-white d-flex align-items-center justify-content-center"
                   style={{
                     fontSize: '0.7rem',
@@ -508,7 +552,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
               <FiSend size={16} className="me-1" />
               Invities
               {pendingInvitesCount > 0 && (
-                <span 
+                <span
                   className="position-absolute badge rounded-pill bg-danger text-white d-flex align-items-center justify-content-center"
                   style={{
                     fontSize: '0.7rem',
@@ -531,18 +575,21 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
         </div>
       </div>
 
-      {/* Advanced Filters Panel */}
-      <UserFiltersPanel
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-        actorRole={actorRole}
-        organizations={[]} // TODO: Fetch organizations if needed
-        cohorts={[]} // TODO: Fetch cohorts if needed
-        isOpen={showFiltersPanel}
-        onToggle={() => setShowFiltersPanel(!showFiltersPanel)}
-      />
-      
+      <div className="rounded-4 border bg-whiteColor dark:bg-whiteColor-dark shadow-sm p-3">
+        {/* Advanced Filters Panel */}
+        <UserFiltersPanel
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+          actorRole={actorRole}
+          organizations={[]} // TODO: Fetch organizations if needed
+          cohorts={[]} // TODO: Fetch cohorts if needed
+          isOpen={showFiltersPanel}
+          onToggle={() => setShowFiltersPanel(!showFiltersPanel)}
+        />
+
+      </div>
+
       {/* Bulk Actions Toolbar */}
       <BulkActionsToolbar
         selectedUsers={selectedUsers}
@@ -555,11 +602,11 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
       />
 
       {/* Table */}
-      <div className="card border-0 shadow-sm mb-4">
-        <div className="card-body p-0">
+      <div className="border rounded-4 overflow-hidden bg-whiteColor dark:bg-whiteColor-dark shadow-sm mb-4">
+        <div className="p-0">
           <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="table-light">
+            <table className="table align-middle mb-0">
+              <thead style={{ background: "#f8fafc" }}>
                 <tr>
                   <th className="ps-4 py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem', width: '40px' }}>
                     <input
@@ -569,13 +616,13 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                       className="form-check-input"
                     />
                   </th>
-                  <th className="py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem' }}>Name/Email</th>
-                  <th className="py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem' }}>Role</th>
-                  <th className="py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem' }}>Organization</th>
-                  <th className="py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem' }}>Verified</th>
-                  <th className="py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem' }}>Last Login</th>
-                  <th className="py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem' }}>Active Sessions</th>
-                  <th className="py-3 fw-semibold text-uppercase small" style={{ fontSize: '0.75rem' }}>Status</th>
+                  <th className="py-4 fw-bold text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>Name/Email</th>
+                  <th className="py-4 fw-bold text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>Role</th>
+                  <th className="py-4 fw-bold text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>Organization</th>
+                  <th className="py-4 fw-bold text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>Verified</th>
+                  <th className="py-4 fw-bold text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>Last Login</th>
+                  <th className="py-4 fw-bold text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>Active Sessions</th>
+                  <th className="py-4 fw-bold text-uppercase text-muted" style={{ fontSize: '0.75rem' }}>Status</th>
                   <th className="pe-4 py-3 fw-semibold text-uppercase small text-end" style={{ fontSize: '0.75rem' }}>Actions</th>
                 </tr>
               </thead>
@@ -593,7 +640,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                   </tr>
                 ) : (
                   items.map((u) => (
-                    <tr key={u.id} className="border-top">
+                    <tr key={u.id} className="border-top" style={{ transition: "all 0.25s ease" }}>
                       <td className="ps-4 py-3">
                         <input
                           type="checkbox"
@@ -604,10 +651,10 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                       </td>
                       <td className="py-3">
                         <div className="d-flex flex-column">
-                          <span className="fw-medium text-dark">
+                          <span className="fw-bold text-dark">
                             {[u.first_name, u.last_name].filter(Boolean).join(" ") || u.email}
                           </span>
-                          <span className="small text-muted">{u.email}</span>
+                          <span className="small text-muted mt-1">{u.email}</span>
                         </div>
                       </td>
                       <td className="py-3">
@@ -646,7 +693,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                         )}
                       </td>
                       <td className="py-3">
-                        <span className="badge bg-secondary">{u.active_sessions ?? 0}</span>
+                        <span className="badge rounded-pill bg-dark px-3 py-2 fw-semibold">{u.active_sessions ?? 0}</span>
                       </td>
                       <td className="py-3">
                         {u.status === "active" ? (
@@ -657,7 +704,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                       </td>
                       <td className="pe-4 py-3">
                         <div className="d-flex gap-1 flex-wrap justify-content-end">
-                          <ActionButton 
+                          <ActionButton
                             onClick={() => window.location.assign(`/dashboards/${actorRole}-users/${u.id}`)}
                             variant="outline-primary"
                             icon={FiEye}
@@ -665,7 +712,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                             View
                           </ActionButton>
                           {(actorRole === "admin" || actorRole === "superadmin") && (
-                            <ActionButton 
+                            <ActionButton
                               onClick={() => {
                                 setEditingUser(u);
                                 setShowEditModal(true);
@@ -676,14 +723,14 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                               Edit
                             </ActionButton>
                           )}
-                          <ActionButton 
+                          <ActionButton
                             onClick={() => doAction(u.id, "force_reset_password")}
                             variant="outline-warning"
                             icon={FiKey}
                           >
                             Reset
                           </ActionButton>
-                          <ActionButton 
+                          <ActionButton
                             onClick={() => doAction(u.id, "toggle_mfa", { enable: !(u.mfa_required ?? false) })}
                             disabled={userAction.isPending}
                             variant="outline-info"
@@ -692,7 +739,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                             MFA
                           </ActionButton>
                           {u.status === "active" ? (
-                            <ActionButton 
+                            <ActionButton
                               onClick={() => doAction(u.id, "suspend")}
                               disabled={userAction.isPending}
                               variant="outline-danger"
@@ -701,7 +748,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                               Suspend
                             </ActionButton>
                           ) : (
-                            <ActionButton 
+                            <ActionButton
                               onClick={() => doAction(u.id, "activate")}
                               disabled={userAction.isPending}
                               variant="outline-success"
@@ -710,7 +757,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                               Activate
                             </ActionButton>
                           )}
-                          <ActionButton 
+                          <ActionButton
                             onClick={() => doAction(u.id, "revoke_sessions")}
                             disabled={userAction.isPending}
                             variant="outline-secondary"
@@ -718,27 +765,27 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                           >
                             Revoke
                           </ActionButton>
-                          <ActionButton 
+                          <ActionButton
                             onClick={async () => {
                               console.log('🗑️ [DELETE] ===== DELETE BUTTON CLICKED =====');
                               console.log('🗑️ [DELETE] User ID:', u.id);
                               console.log('🗑️ [DELETE] User Email:', u.email);
                               console.log('🗑️ [DELETE] User Name:', [u.first_name, u.last_name].filter(Boolean).join(" ") || u.email);
-                              
+
                               if (window.confirm(`Are you sure you want to delete ${u.email}? This action cannot be undone.`)) {
                                 console.log('🗑️ [DELETE] ✅ User confirmed deletion');
                                 setDeletingUserId(u.id);
-                                
+
                                 try {
                                   console.log('🗑️ [DELETE] 🚀 Starting delete mutation...');
                                   console.log('🗑️ [DELETE] Mutation state - isPending:', deleteUser.isPending);
-                                  
+
                                   const result = await deleteUser.mutateAsync(u.id);
-                                  
+
                                   console.log('🗑️ [DELETE] ✅ Delete mutation completed successfully');
                                   console.log('🗑️ [DELETE] Result:', result);
                                   console.log('🗑️ [DELETE] User should now be removed from database');
-                                  
+
                                   // Success is handled by the mutation hook
                                 } catch (error) {
                                   console.error('🗑️ [DELETE] ❌ Delete mutation failed');
@@ -783,10 +830,10 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
             </div>
             <div className="d-flex align-items-center gap-2">
               <label className="small text-muted mb-0 me-2">Items per page:</label>
-              <select 
-                className="form-select form-select-sm" 
+              <select
+                className="form-select form-select-sm"
                 style={{ width: 'auto' }}
-                value={filters.pageSize} 
+                value={filters.pageSize}
                 onChange={(e) => setFilter("pageSize", Number(e.target.value))}
               >
                 {[10, 20, 30, 50].map((n) => (
@@ -796,9 +843,9 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
               <nav aria-label="Page navigation">
                 <ul className="pagination pagination-sm mb-0">
                   <li className={`page-item ${filters.page <= 1 ? 'disabled' : ''}`}>
-                    <button 
-                      className="page-link" 
-                      disabled={filters.page <= 1} 
+                    <button
+                      className="page-link"
+                      disabled={filters.page <= 1}
                       onClick={() => setFilter("page", filters.page - 1)}
                       aria-label="Previous"
                     >
@@ -811,9 +858,9 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
                     </span>
                   </li>
                   <li className={`page-item ${filters.page >= totalPages ? 'disabled' : ''}`}>
-                    <button 
-                      className="page-link" 
-                      disabled={filters.page >= totalPages} 
+                    <button
+                      className="page-link"
+                      disabled={filters.page >= totalPages}
                       onClick={() => setFilter("page", filters.page + 1)}
                       aria-label="Next"
                     >
