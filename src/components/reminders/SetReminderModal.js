@@ -39,7 +39,9 @@ const SetReminderModal = ({ isOpen, onClose, quizId, quizTitle, prefilledTime = 
       }
 
       // Invalidate reminders query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['quiz-reminders'] });
+      queryClient.invalidateQueries({
+  queryKey: ['quiz-reminders', quizId],
+});
 
       createAlert({
         icon: 'success',

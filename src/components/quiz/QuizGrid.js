@@ -1,3 +1,4 @@
+//quiz/QuizGrid.js
 /**
  * QuizGrid Component
  * 
@@ -42,6 +43,7 @@ const QuizGrid = ({
   );
   const debouncedSearch = useDebouncedValue(localSearch, 500);
   const observerTarget = useRef(null);
+  const observerRef = useRef(null);
 
   // Handle debounced search
   useEffect(() => {
@@ -51,31 +53,50 @@ const QuizGrid = ({
   }, [debouncedSearch, onSearch, searchValue]);
 
   // Infinite scroll observer
-  useEffect(() => {
-    if (currentPaginationMode !== 'infinite-scroll' && currentPaginationMode !== 'both') {
-      return;
-    }
+useEffect(() => {
+  if (
+    currentPaginationMode !== 'infinite-scroll' &&
+    currentPaginationMode !== 'both'
+  ) {
+    return;
+  }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading && onLoadMore) {
-          onLoadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
+  if (!observerTarget.current) {
+    return;
+  }
 
-    const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
+  observerRef.current?.disconnect();
 
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
+  observerRef.current = new IntersectionObserver(
+    (entries) => {
+      const first = entries[0];
+
+      if (
+        first?.isIntersecting &&
+        hasMore &&
+        !isLoading &&
+        onLoadMore
+      ) {
+        onLoadMore();
       }
-    };
-  }, [currentPaginationMode, hasMore, isLoading, onLoadMore]);
+    },
+    {
+      threshold: 0.1,
+      rootMargin: '200px',
+    }
+  );
+
+  observerRef.current.observe(observerTarget.current);
+
+  return () => {
+    observerRef.current?.disconnect();
+  };
+}, [
+  currentPaginationMode,
+  hasMore,
+  isLoading,
+  onLoadMore,
+]);
 
   // Sort options
   const sortOptions = [
@@ -246,8 +267,8 @@ const QuizGrid = ({
             pagination.totalPages > 1 && (
               <div className="flex items-center justify-between pt-4 border-t border-borderColor dark:border-borderColor-dark">
                 <div className="text-sm text-contentColor dark:text-contentColor-dark">
-                  Showing {(pagination.page - 1) * 20 + 1} to{' '}
-                  {Math.min(pagination.page * 20, pagination.total)} of {pagination.total} quizzes
+                  Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                  {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} quizzes
                 </div>
                 <div className="flex items-center gap-2">
                   <button

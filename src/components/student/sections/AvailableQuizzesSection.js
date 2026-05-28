@@ -1,6 +1,7 @@
+//student/sections/AvailableQuizzesSection.js
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import QuizGrid from '@/components/quiz/QuizGrid';
 import useStudentQuizzes from '@/hooks/api/useStudentQuizzes';
@@ -93,6 +94,18 @@ const AvailableQuizzesSection = ({ className = '' }) => {
     setPrefilledReminderTime(null);
   }, []);
 
+  const actionHandlers = useMemo(() => ({
+  onAttempt: handleAttemptQuiz,
+  onView: handleViewQuiz,
+  onPreview: handlePreviewQuiz,
+  onReminderSet: handleReminderSet,
+}), [
+  handleAttemptQuiz,
+  handleViewQuiz,
+  handlePreviewQuiz,
+  handleReminderSet,
+]);
+
   return (
     <div className={`mb-8 ${className}`}>
       <h2 className="text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-6">
@@ -110,12 +123,7 @@ const AvailableQuizzesSection = ({ className = '' }) => {
         searchValue={filters.search}
         sortValue={filters.sort}
         filters={filters}
-        actionHandlers={{
-          onAttempt: handleAttemptQuiz,
-          onView: handleViewQuiz,
-          onPreview: handlePreviewQuiz,
-          onReminderSet: handleReminderSet,
-        }}
+        actionHandlers={actionHandlers}
         context="student-view"
       />
 

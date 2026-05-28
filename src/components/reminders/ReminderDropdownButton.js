@@ -18,7 +18,9 @@ const ReminderDropdownButton = ({ quiz, onReminderSet, className = '' }) => {
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('pointerdown', handleClickOutside, {
+  passive: true,
+});
     }
 
     return () => {

@@ -7,7 +7,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import {
   FiEdit,
@@ -43,6 +43,7 @@ const QuizCard = ({
   onViewAttempts,
   onGenerateReport,
   onViewReport,
+  onReminderSet,
   showProgress = false,
   attemptCount = 0,
   progress = null,
@@ -88,7 +89,7 @@ const QuizCard = ({
     : 'No description available';
 
   // Role-based action buttons
-  const getActionButtons = () => {
+  const actionButtons = useMemo(() => {
     const buttons = [];
 
     if (role === 'instructor') {
@@ -346,8 +347,28 @@ const QuizCard = ({
       }
     }
 
-    return buttons;
-  };
+return buttons;
+}, [
+  role,
+  context,
+  id,
+  title,
+  displayStatus,
+  attemptCount,
+  progress,
+  quiz,
+  maxAttempts,
+  onEdit,
+  onDelete,
+  onView,
+  onAttempt,
+  onPreview,
+  onDuplicate,
+  onViewAttempts,
+  onGenerateReport,
+  onViewReport,
+  onReminderSet,
+]);
 
   return (
     <div
@@ -368,7 +389,7 @@ const QuizCard = ({
             src={coverImage}
             alt={title || 'Quiz'}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.03] will-change-transform"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
         ) : (
@@ -465,19 +486,21 @@ const QuizCard = ({
           <div className="flex items-center justify-between gap-2">
             {role === 'student' && context === 'student-view' ? (
               <div className="w-full space-y-2">
-                {getActionButtons()}
+                {actionButtons}
                 {displayStatus === 'published' && onReminderSet && (
                   <div className="flex items-center justify-end mt-2">
-                    <ReminderDropdownButton
-                      quiz={quiz}
-                      onReminderSet={onReminderSet}
-                    />
+<ReminderDropdownButton
+  quizId={id}
+  quizTitle={title}
+  startDate={startDate}
+  onReminderSet={onReminderSet}
+/>
                   </div>
                 )}
               </div>
             ) : (
               <div className="flex items-center gap-2 flex-wrap">
-                {getActionButtons()}
+                {actionButtons}
               </div>
             )}
           </div>
@@ -487,5 +510,5 @@ const QuizCard = ({
   );
 };
 
-export default QuizCard;
+export default React.memo(QuizCard);
 

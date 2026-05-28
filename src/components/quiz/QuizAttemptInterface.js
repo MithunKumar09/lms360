@@ -53,6 +53,7 @@ const QuizAttemptInterface = ({
 
       return () => {
         if (countdownTimerRef.current) {
+          clearInterval(autoSaveTimerRef.current);
           clearInterval(countdownTimerRef.current);
         }
       };

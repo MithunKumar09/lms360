@@ -1,3 +1,4 @@
+//StudentMentorizedGroup
 "use client";
 
 import { useState } from "react";
@@ -86,13 +87,13 @@ export default function StudentMentorizedGroupMain() {
       <div className="w-full">
         <div className="card border-0 shadow-sm mb-4">
           <div className="card-body p-4">
-            <h1 className="h3 mb-2 fw-bold text-dark">Mentorized Group</h1>
-            <p className="text-muted mb-0 small">
+            <h1 className="text-3xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">Mentorized Group</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-contentColor dark:text-contentColor-dark">
               Your mentor activity center
             </p>
           </div>
         </div>
-        <div className="text-center py-12 bg-whiteColor dark:bg-whiteColor-dark rounded-md border-2 border-borderColor dark:border-borderColor-dark">
+        <div className="rounded-3xl border border-dashed border-borderColor bg-whiteColor px-6 py-16 text-center shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
           <p className="text-contentColor dark:text-contentColor-dark">
             You don&apos;t have any assigned mentors yet.
           </p>
@@ -102,14 +103,14 @@ export default function StudentMentorizedGroupMain() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-8">
       {/* Header */}
-      <div className="card border-0 shadow-sm mb-4">
-        <div className="card-body p-4">
-          <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div className="overflow-hidden rounded-3xl border border-borderColor bg-whiteColor shadow-sm dark:border-borderColor-dark dark:bg-whiteColor-dark">
+        <div className="bg-gradient-to-r from-primaryColor/[0.05] to-transparent p-6 md:p-8 dark:from-primaryColor/[0.08]">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="h3 mb-2 fw-bold text-dark">Mentorized Group</h1>
-              <p className="text-muted mb-0 small">
+              <h1 className="text-3xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">Mentorized Group</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-contentColor dark:text-contentColor-dark">
                 Your mentor activity center - Connect with mentors and peers
               </p>
             </div>
@@ -118,15 +119,17 @@ export default function StudentMentorizedGroupMain() {
       </div>
 
       {/* Mentors List */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {mentors.map((mentorData, index) => (
           <div
             key={`${mentorData.mentor.id}_${mentorData.cohort?.id || 'no_cohort'}`}
-            className="bg-whiteColor dark:bg-whiteColor-dark border-2 border-borderColor dark:border-borderColor-dark rounded-md p-6 hover:shadow-lg transition-shadow"
+            className="overflow-hidden rounded-3xl border border-borderColor bg-whiteColor shadow-sm transition-all duration-300 hover:border-primaryColor/20 hover:shadow-xl dark:border-borderColor-dark dark:bg-whiteColor-dark"
           >
-            {/* Mentor Info */}
-            <div className="flex items-start gap-4 mb-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-darkdeep4 flex-shrink-0 flex items-center justify-center">
+<div className="p-6 md:p-8">
+
+{/* Mentor Info */}
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+              <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-primaryColor/10 ring-4 ring-primaryColor/5">
                 {mentorData.mentor.avatar_url ? (
                   <img
                     src={mentorData.mentor.avatar_url}
@@ -134,24 +137,24 @@ export default function StudentMentorizedGroupMain() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-primaryColor/20 text-primaryColor text-2xl font-bold">
+                  <div className="flex h-full w-full items-center justify-center bg-primaryColor/10 text-3xl font-bold text-primaryColor">
                     {(mentorData.mentor.first_name?.[0] || mentorData.mentor.email?.[0] || "M").toUpperCase()}
                   </div>
                 )}
               </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-2">
+              <div className="flex-1 space-y-5">
+                <h2 className="text-2xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
                   {`${mentorData.mentor.first_name || ""} ${mentorData.mentor.last_name || ""}`.trim() || mentorData.mentor.email || "Mentor"}
                 </h2>
-                <p className="text-sm text-contentColor dark:text-contentColor-dark mb-2">
+                <p className="text-sm leading-relaxed text-contentColor dark:text-contentColor-dark">
                   {mentorData.mentor.email}
                 </p>
                 {mentorData.cohort && (
-                  <div className="mt-3 p-3 bg-darkdeep3 dark:bg-darkdeep3-dark rounded-md">
-                    <p className="text-sm font-semibold text-blackColor dark:text-blackColor-dark mb-1">
+                  <div className="rounded-2xl border border-borderColor bg-lightGrey4/40 p-5 dark:border-borderColor-dark dark:bg-primaryColor/[0.03]">
+                    <p className="mb-4 text-base font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
                       Cohort Information
                     </p>
-                    <div className="space-y-1 text-sm text-contentColor dark:text-contentColor-dark">
+                    <div className="grid grid-cols-1 gap-3 text-sm text-contentColor dark:text-contentColor-dark md:grid-cols-2">
                       <p>
                         <span className="font-semibold">Cohort:</span> {mentorData.cohort.code}
                         {mentorData.cohort.level && ` (Level ${mentorData.cohort.level})`}
@@ -179,11 +182,11 @@ export default function StudentMentorizedGroupMain() {
                   </div>
                 )}
                 {/* Feedback Button */}
-                <div className="mt-4">
+                <div className="flex items-center justify-end pt-2">
                   <button
                     type="button"
                     onClick={() => handleFeedbackClick(mentorData.mentor)}
-                    className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium text-sm transition-colors cursor-pointer"
+                    className="inline-flex items-center justify-center rounded-2xl bg-primaryColor px-5 py-2.5 text-sm font-semibold text-whiteColor shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-primaryColor/90"
                   >
                     Feedback
                   </button>
@@ -193,17 +196,17 @@ export default function StudentMentorizedGroupMain() {
 
             {/* Peers Section */}
             {mentorData.peers && mentorData.peers.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-borderColor dark:border-borderColor-dark">
-                <h3 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-3">
+              <div className="mt-8 border-t border-borderColor pt-8 dark:border-borderColor-dark">
+                <h3 className="mb-5 text-xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
                   Peers in this Group ({mentorData.peers.length})
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {mentorData.peers.map((peer) => (
                     <div
                       key={peer.id}
-                      className="flex items-center gap-3 p-3 bg-darkdeep3 dark:bg-darkdeep3-dark rounded-md"
+                      className="flex items-center gap-4 rounded-2xl border border-borderColor bg-lightGrey4/40 p-4 transition-all duration-300 hover:border-primaryColor/20 hover:shadow-md dark:border-borderColor-dark dark:bg-primaryColor/[0.03]"
                     >
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-darkdeep4 flex-shrink-0 flex items-center justify-center">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primaryColor/10">
                         {peer.avatar_url ? (
                           <img
                             src={peer.avatar_url}
@@ -217,7 +220,7 @@ export default function StudentMentorizedGroupMain() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-blackColor dark:text-blackColor-dark truncate">
+                        <p className="truncate text-sm font-bold text-blackColor dark:text-blackColor-dark">
                           {`${peer.first_name || ""} ${peer.last_name || ""}`.trim() || peer.email}
                         </p>
                         <p className="text-xs text-contentColor dark:text-contentColor-dark truncate">
@@ -231,8 +234,8 @@ export default function StudentMentorizedGroupMain() {
             )}
 
             {/* Tasks Section */}
-            <div className="mt-4 pt-4 border-t border-borderColor dark:border-borderColor-dark">
-              <h3 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-3">
+            <div className="mt-8 border-t border-borderColor pt-8 dark:border-borderColor-dark">
+              <h3 className="mb-5 text-xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
                 Tasks
               </h3>
               <TaskList
@@ -248,8 +251,8 @@ export default function StudentMentorizedGroupMain() {
             </div>
 
             {/* Activity Feed Section */}
-            <div className="mt-4 pt-4 border-t border-borderColor dark:border-borderColor-dark">
-              <h3 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-3">
+            <div className="mt-8 border-t border-borderColor pt-8 dark:border-borderColor-dark">
+              <h3 className="mb-5 text-xl font-bold tracking-tight text-blackColor dark:text-blackColor-dark">
                 Activity Feed
               </h3>
               <ActivityFeed
@@ -267,6 +270,7 @@ export default function StudentMentorizedGroupMain() {
                 }}
               />
             </div>
+          </div>
           </div>
         ))}
       </div>
