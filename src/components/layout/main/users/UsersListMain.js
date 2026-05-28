@@ -364,209 +364,185 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
 
   return (
     <div className="w-100 d-flex flex-column gap-4">
-      {/* Header */}
-      <div className="overflow-hidden rounded-4 border bg-gradient-to-r from-primaryColor/[0.04] via-whiteColor to-whiteColor p-4 p-lg-5 shadow-sm dark:from-primaryColor/[0.08] dark:via-whiteColor-dark dark:to-whiteColor-dark">
-        <div className="row g-4 align-items-center">
+{/* Header */}
+<div className="rounded-4 border bg-gradient-to-r from-primaryColor/[0.04] via-whiteColor to-whiteColor p-4 p-lg-5 shadow-sm dark:from-primaryColor/[0.08] dark:via-whiteColor-dark dark:to-whiteColor-dark">
+  
+  <div className="row g-4 align-items-stretch">
 
-          {/* Left Content */}
-          <div className="col-12 col-xl-7">
-            <div className="pe-xl-4">
-              <h1
-                className="fw-bold text-dark mb-3"
-                style={{
-                  fontSize: "2rem",
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1.1,
-                }}
-              >
-                Users Management
-              </h1>
+    {/* Left Content */}
+    <div className="col-12">
+      <div className="mb-2">
+        <h1
+          className="fw-bold text-dark mb-3"
+          style={{
+            fontSize: "2rem",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.1,
+          }}
+        >
+          Users Management
+        </h1>
 
-              <p
-                className="mb-0 text-muted"
-                style={{
-                  maxWidth: "720px",
-                  lineHeight: 1.8,
-                  fontSize: "0.98rem",
-                }}
-              >
-                Manage platform users, invitations, permissions,
-                verification states, sessions, and access controls.
-              </p>
-            </div>
-          </div>
-
-          {/* Right Metrics */}
-          <div className="col-12 col-xl-5">
-            <div className="d-grid gap-3" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
-
-              <div className="rounded-4 border bg-whiteColor px-4 py-4 shadow-sm h-100 dark:bg-whiteColor-dark">
-                <div
-                  className="text-uppercase text-muted fw-semibold mb-2"
-                  style={{
-                    fontSize: "0.68rem",
-                    letterSpacing: "0.14em",
-                  }}
-                >
-                  Total Users
-                </div>
-
-                <div
-                  className="fw-bold text-dark"
-                  style={{
-                    fontSize: "2rem",
-                    lineHeight: 1,
-                  }}
-                >
-                  {total}
-                </div>
-              </div>
-
-              <div className="rounded-4 border bg-whiteColor px-4 py-4 shadow-sm h-100 dark:bg-whiteColor-dark">
-                <div
-                  className="text-uppercase text-muted fw-semibold mb-2"
-                  style={{
-                    fontSize: "0.68rem",
-                    letterSpacing: "0.14em",
-                  }}
-                >
-                  Verified
-                </div>
-
-                <div
-                  className="fw-bold text-success"
-                  style={{
-                    fontSize: "2rem",
-                    lineHeight: 1,
-                  }}
-                >
-                  {verifiedUsersCount}
-                </div>
-              </div>
-
-              <div className="rounded-4 border bg-whiteColor px-4 py-4 shadow-sm h-100 dark:bg-whiteColor-dark">
-                <div
-                  className="text-uppercase text-muted fw-semibold mb-2"
-                  style={{
-                    fontSize: "0.68rem",
-                    letterSpacing: "0.14em",
-                  }}
-                >
-                  Pending
-                </div>
-
-                <div
-                  className="fw-bold text-danger"
-                  style={{
-                    fontSize: "2rem",
-                    lineHeight: 1,
-                  }}
-                >
-                  {unverifiedUsersCount}
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
+        <p
+          className="mb-0 text-muted"
+          style={{
+            lineHeight: 1.8,
+            fontSize: "0.98rem",
+            maxWidth: "900px",
+          }}
+        >
+          Manage platform users, invitations, permissions,
+          verification states, sessions, and access controls.
+        </p>
       </div>
+    </div>
 
-      {/* Action Buttons */}
-      <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-4 mb-4 rounded-4 border bg-whiteColor p-4 shadow-sm dark:bg-whiteColor-dark">
+    {/* Metrics */}
+    <div className="col-12">
+      <div className="row g-4">
 
-        {/* Left Side */}
-        <div>
-          <h2
-            className="mb-1 fw-bold text-dark"
-            style={{
-              fontSize: "1.15rem",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            User Operations
-          </h2>
-
-          <p
-            className="mb-0 text-muted"
-            style={{
-              fontSize: "0.92rem",
-            }}
-          >
-            Create, import, and export platform users
-          </p>
-        </div>
-
-        {/* Right Actions */}
-        <div className="d-flex flex-wrap align-items-center gap-3">
-
-          {/* Export */}
-          <div className="dropdown">
-            <button
-              type="button"
-              className="btn d-inline-flex align-items-center gap-2 rounded-4 border px-4 py-3 fw-semibold shadow-sm bg-whiteColor"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <FiUpload size={18} />
-              Export
-            </button>
-
-            <ul
-              className="dropdown-menu border-0 shadow-lg rounded-4 overflow-hidden py-2"
+        {/* Total Users */}
+        <div className="col-12 col-md-4">
+          <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+            
+            <div
+              className="text-uppercase text-muted fw-semibold mb-2"
               style={{
-                minWidth: "220px",
+                fontSize: "0.72rem",
+                letterSpacing: "0.14em",
               }}
             >
-              <li>
-                <button
-                  className="dropdown-item py-3 px-4 fw-medium"
-                  onClick={() => handleExport("csv")}
-                >
-                  Export as CSV
-                </button>
-              </li>
+              Total Users
+            </div>
 
-              <li>
-                <button
-                  className="dropdown-item py-3 px-4 fw-medium"
-                  onClick={() => handleExport("json")}
-                >
-                  Export as JSON
-                </button>
-              </li>
+            <div
+              className="fw-bold text-dark"
+              style={{
+                fontSize: "2.4rem",
+                lineHeight: 1,
+              }}
+            >
+              {total}
+            </div>
 
-              <li>
-                <button
-                  className="dropdown-item py-3 px-4 fw-medium"
-                  onClick={() => handleExport("xlsx")}
-                >
-                  Export as Excel
-                </button>
-              </li>
-            </ul>
           </div>
+        </div>
 
-          {/* Bulk Import */}
+        {/* Verified */}
+        <div className="col-12 col-md-4">
+          <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+
+            <div
+              className="text-uppercase text-muted fw-semibold mb-2"
+              style={{
+                fontSize: "0.72rem",
+                letterSpacing: "0.14em",
+              }}
+            >
+              Verified
+            </div>
+
+            <div
+              className="fw-bold text-success"
+              style={{
+                fontSize: "2.4rem",
+                lineHeight: 1,
+              }}
+            >
+              {verifiedUsersCount}
+            </div>
+
+          </div>
+        </div>
+
+        {/* Pending */}
+        <div className="col-12 col-md-4">
+          <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+
+            <div
+              className="text-uppercase text-muted fw-semibold mb-2"
+              style={{
+                fontSize: "0.72rem",
+                letterSpacing: "0.14em",
+              }}
+            >
+              Pending
+            </div>
+
+            <div
+              className="fw-bold text-danger"
+              style={{
+                fontSize: "2.4rem",
+                lineHeight: 1,
+              }}
+            >
+              {unverifiedUsersCount}
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+      {/* Action Buttons */}
+      <div className="d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center gap-4 mb-4 p-4 rounded-4 border bg-whiteColor dark:bg-whiteColor-dark shadow-sm">
+        <div className="dropdown">
           <button
             type="button"
-            onClick={() => setShowBulkImportModal(true)}
-            className="btn btn-outline-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold"
+            className="btn d-inline-flex align-items-center gap-2 rounded-4 border-0 px-4 py-3 shadow-sm"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
             <FiUpload size={18} />
-            Bulk Import
+            Export
           </button>
-
-          {/* Create User */}
-          <button
-            type="button"
-            onClick={() => setShowCreateModal(true)}
-            className="btn btn-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold shadow-lg"
-          >
-            <FiUserPlus size={18} />
-            Create New User
-          </button>
-
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => handleExport('csv')}
+              >
+                Export as CSV
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => handleExport('json')}
+              >
+                Export as JSON
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => handleExport('xlsx')}
+              >
+                Export as Excel
+              </button>
+            </li>
+          </ul>
         </div>
+        <button
+          type="button"
+          onClick={() => setShowBulkImportModal(true)}
+          className="btn btn-outline-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold"
+        >
+          <FiUpload size={18} />
+          Bulk Import
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowCreateModal(true)}
+          className="btn btn-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold shadow-lg"
+        >
+          <FiUserPlus size={18} />
+          Create New User
+        </button>
       </div>
 
       {/* Error State */}
