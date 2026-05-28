@@ -397,93 +397,93 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
       </div>
     </div>
 
-    {/* Metrics */}
-    <div className="col-12">
-      <div className="row g-4">
+{/* Metrics */}
+<div className="col-12">
+  <div className="d-flex flex-column flex-md-row gap-4 w-100">
 
-        {/* Total Users */}
-        <div className="col-12 col-md-4">
-          <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-            
-            <div
-              className="text-uppercase text-muted fw-semibold mb-2"
-              style={{
-                fontSize: "0.72rem",
-                letterSpacing: "0.14em",
-              }}
-            >
-              Total Users
-            </div>
+    {/* Total Users */}
+    <div className="flex-fill">
+      <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
 
-            <div
-              className="fw-bold text-dark"
-              style={{
-                fontSize: "2.4rem",
-                lineHeight: 1,
-              }}
-            >
-              {total}
-            </div>
-
-          </div>
+        <div
+          className="text-uppercase text-muted fw-semibold mb-2"
+          style={{
+            fontSize: "0.72rem",
+            letterSpacing: "0.14em",
+          }}
+        >
+          Total Users
         </div>
 
-        {/* Verified */}
-        <div className="col-12 col-md-4">
-          <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-
-            <div
-              className="text-uppercase text-muted fw-semibold mb-2"
-              style={{
-                fontSize: "0.72rem",
-                letterSpacing: "0.14em",
-              }}
-            >
-              Verified
-            </div>
-
-            <div
-              className="fw-bold text-success"
-              style={{
-                fontSize: "2.4rem",
-                lineHeight: 1,
-              }}
-            >
-              {verifiedUsersCount}
-            </div>
-
-          </div>
-        </div>
-
-        {/* Pending */}
-        <div className="col-12 col-md-4">
-          <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-
-            <div
-              className="text-uppercase text-muted fw-semibold mb-2"
-              style={{
-                fontSize: "0.72rem",
-                letterSpacing: "0.14em",
-              }}
-            >
-              Pending
-            </div>
-
-            <div
-              className="fw-bold text-danger"
-              style={{
-                fontSize: "2.4rem",
-                lineHeight: 1,
-              }}
-            >
-              {unverifiedUsersCount}
-            </div>
-
-          </div>
+        <div
+          className="fw-bold text-dark"
+          style={{
+            fontSize: "2.4rem",
+            lineHeight: 1,
+          }}
+        >
+          {total}
         </div>
 
       </div>
     </div>
+
+    {/* Verified */}
+    <div className="flex-fill">
+      <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+
+        <div
+          className="text-uppercase text-muted fw-semibold mb-2"
+          style={{
+            fontSize: "0.72rem",
+            letterSpacing: "0.14em",
+          }}
+        >
+          Verified
+        </div>
+
+        <div
+          className="fw-bold text-success"
+          style={{
+            fontSize: "2.4rem",
+            lineHeight: 1,
+          }}
+        >
+          {verifiedUsersCount}
+        </div>
+
+      </div>
+    </div>
+
+    {/* Pending */}
+    <div className="flex-fill">
+      <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+
+        <div
+          className="text-uppercase text-muted fw-semibold mb-2"
+          style={{
+            fontSize: "0.72rem",
+            letterSpacing: "0.14em",
+          }}
+        >
+          Pending
+        </div>
+
+        <div
+          className="fw-bold text-danger"
+          style={{
+            fontSize: "2.4rem",
+            lineHeight: 1,
+          }}
+        >
+          {unverifiedUsersCount}
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
 
   </div>
 </div>
