@@ -399,12 +399,10 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
 
 {/* Metrics */}
 <div className="col-12">
-  <div className="d-flex flex-column flex-md-row gap-4 w-100">
+  <div className="row g-4">
 
-    {/* Total Users */}
-    <div className="flex-fill">
+    <div className="col-12 col-md-4">
       <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-
         <div
           className="text-uppercase text-muted fw-semibold mb-2"
           style={{
@@ -424,14 +422,11 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
         >
           {total}
         </div>
-
       </div>
     </div>
 
-    {/* Verified */}
-    <div className="flex-fill">
+    <div className="col-12 col-md-4">
       <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-
         <div
           className="text-uppercase text-muted fw-semibold mb-2"
           style={{
@@ -451,14 +446,11 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
         >
           {verifiedUsersCount}
         </div>
-
       </div>
     </div>
 
-    {/* Pending */}
-    <div className="flex-fill">
+    <div className="col-12 col-md-4">
       <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-
         <div
           className="text-uppercase text-muted fw-semibold mb-2"
           style={{
@@ -478,7 +470,6 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
         >
           {unverifiedUsersCount}
         </div>
-
       </div>
     </div>
 
