@@ -148,6 +148,7 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
 
   // Track which user is being deleted (to show loading state per user)
   const [deletingUserId, setDeletingUserId] = useState(null);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   // Bulk operations
   const bulkAction = useBulkAction();
@@ -364,177 +365,170 @@ export default function UsersListMain({ actorRole = "superadmin" }) {
 
   return (
     <div className="w-100 d-flex flex-column gap-4">
-{/* Header */}
-<div className="rounded-4 border bg-gradient-to-r from-primaryColor/[0.04] via-whiteColor to-whiteColor p-4 p-lg-5 shadow-sm dark:from-primaryColor/[0.08] dark:via-whiteColor-dark dark:to-whiteColor-dark">
-  
-  <div className="row g-4 align-items-stretch">
 
-    {/* Left Content */}
-    <div className="col-12">
-      <div className="mb-2">
-        <h1
-          className="fw-bold text-dark mb-3"
-          style={{
-            fontSize: "2rem",
-            letterSpacing: "-0.03em",
-            lineHeight: 1.1,
-          }}
-        >
-          Users Management
-        </h1>
+      {/* Header Statistics */}
+      <div className="border-0 rounded-4 shadow-sm overflow-hidden bg-whiteColor dark:bg-whiteColor-dark">
+        <div className="p-4">
+          <div className="row g-4">
 
-        <p
-          className="mb-0 text-muted"
-          style={{
-            lineHeight: 1.8,
-            fontSize: "0.98rem",
-            maxWidth: "900px",
-          }}
-        >
-          Manage platform users, invitations, permissions,
-          verification states, sessions, and access controls.
-        </p>
-      </div>
-    </div>
+            <div className="col-12 col-lg-4">
+              <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+                <div
+                  className="text-uppercase text-muted fw-semibold mb-2"
+                  style={{
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.14em",
+                  }}
+                >
+                  Total Users
+                </div>
 
-{/* Metrics */}
-<div className="col-12">
-  <div className="row g-4">
+                <div
+                  className="fw-bold text-dark"
+                  style={{
+                    fontSize: "2.4rem",
+                    lineHeight: 1,
+                  }}
+                >
+                  {total}
+                </div>
+              </div>
+            </div>
 
-    <div className="col-12 col-md-4">
-      <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-        <div
-          className="text-uppercase text-muted fw-semibold mb-2"
-          style={{
-            fontSize: "0.72rem",
-            letterSpacing: "0.14em",
-          }}
-        >
-          Total Users
-        </div>
+            <div className="col-12 col-lg-4">
+              <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+                <div
+                  className="text-uppercase text-muted fw-semibold mb-2"
+                  style={{
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.14em",
+                  }}
+                >
+                  Verified
+                </div>
 
-        <div
-          className="fw-bold text-dark"
-          style={{
-            fontSize: "2.4rem",
-            lineHeight: 1,
-          }}
-        >
-          {total}
-        </div>
-      </div>
-    </div>
+                <div
+                  className="fw-bold text-success"
+                  style={{
+                    fontSize: "2.4rem",
+                    lineHeight: 1,
+                  }}
+                >
+                  {verifiedUsersCount}
+                </div>
+              </div>
+            </div>
 
-    <div className="col-12 col-md-4">
-      <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
-        <div
-          className="text-uppercase text-muted fw-semibold mb-2"
-          style={{
-            fontSize: "0.72rem",
-            letterSpacing: "0.14em",
-          }}
-        >
-          Verified
-        </div>
+            <div className="col-12 col-lg-4">
+              <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+                <div
+                  className="text-uppercase text-muted fw-semibold mb-2"
+                  style={{
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.14em",
+                  }}
+                >
+                  Pending
+                </div>
 
-        <div
-          className="fw-bold text-success"
-          style={{
-            fontSize: "2.4rem",
-            lineHeight: 1,
-          }}
-        >
-          {verifiedUsersCount}
+                <div
+                  className="fw-bold text-danger"
+                  style={{
+                    fontSize: "2.4rem",
+                    lineHeight: 1,
+                  }}
+                >
+                  {unverifiedUsersCount}
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
 
-    <div className="col-12 col-md-4">
-      <div className="h-100 rounded-4 border bg-whiteColor px-4 py-4 shadow-sm dark:bg-whiteColor-dark">
+{/* Action Buttons */}
+<div className="rounded-4 border bg-whiteColor dark:bg-whiteColor-dark shadow-sm p-4 mb-4">
+  <div className="d-flex flex-wrap align-items-center gap-3">
+
+    {/* Export */}
+    <div className="position-relative">
+
+      <button
+        type="button"
+        onClick={() => setShowExportMenu((prev) => !prev)}
+        className="btn d-inline-flex align-items-center gap-2 rounded-4 border px-4 py-3 shadow-sm"
+      >
+        <FiUpload size={18} />
+        Export
+      </button>
+
+      {showExportMenu && (
         <div
-          className="text-uppercase text-muted fw-semibold mb-2"
+          className="position-absolute top-100 start-0 mt-2 bg-whiteColor dark:bg-whiteColor-dark border rounded-4 shadow-lg overflow-hidden"
           style={{
-            fontSize: "0.72rem",
-            letterSpacing: "0.14em",
+            minWidth: "220px",
+            zIndex: 1050,
           }}
         >
-          Pending
-        </div>
-
-        <div
-          className="fw-bold text-danger"
-          style={{
-            fontSize: "2.4rem",
-            lineHeight: 1,
-          }}
-        >
-          {unverifiedUsersCount}
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-  </div>
-</div>
-
-      {/* Action Buttons */}
-      <div className="d-flex flex-column flex-xl-row justify-content-between align-items-start align-items-xl-center gap-4 mb-4 p-4 rounded-4 border bg-whiteColor dark:bg-whiteColor-dark shadow-sm">
-        <div className="dropdown">
           <button
             type="button"
-            className="btn d-inline-flex align-items-center gap-2 rounded-4 border-0 px-4 py-3 shadow-sm"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
+            className="w-100 text-start border-0 bg-transparent px-4 py-3"
+            onClick={() => {
+              handleExport("csv");
+              setShowExportMenu(false);
+            }}
           >
-            <FiUpload size={18} />
-            Export
+            Export as CSV
           </button>
-          <ul className="dropdown-menu">
-            <li>
-              <button
-                className="dropdown-item"
-                onClick={() => handleExport('csv')}
-              >
-                Export as CSV
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                onClick={() => handleExport('json')}
-              >
-                Export as JSON
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                onClick={() => handleExport('xlsx')}
-              >
-                Export as Excel
-              </button>
-            </li>
-          </ul>
+
+          <button
+            type="button"
+            className="w-100 text-start border-0 bg-transparent px-4 py-3"
+            onClick={() => {
+              handleExport("json");
+              setShowExportMenu(false);
+            }}
+          >
+            Export as JSON
+          </button>
+
+          <button
+            type="button"
+            className="w-100 text-start border-0 bg-transparent px-4 py-3"
+            onClick={() => {
+              handleExport("xlsx");
+              setShowExportMenu(false);
+            }}
+          >
+            Export as Excel
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowBulkImportModal(true)}
-          className="btn btn-outline-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold"
-        >
-          <FiUpload size={18} />
-          Bulk Import
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowCreateModal(true)}
-          className="btn btn-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold shadow-lg"
-        >
-          <FiUserPlus size={18} />
-          Create New User
-        </button>
-      </div>
+      )}
+    </div>
+
+    {/* Bulk Import */}
+    <button
+      type="button"
+      onClick={() => setShowBulkImportModal(true)}
+      className="btn btn-outline-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold"
+    >
+      <FiUpload size={18} />
+      Bulk Import
+    </button>
+
+    {/* Create User */}
+    <button
+      type="button"
+      onClick={() => setShowCreateModal(true)}
+      className="btn btn-primary d-inline-flex align-items-center gap-2 rounded-4 px-4 py-3 fw-semibold shadow-lg"
+    >
+      <FiUserPlus size={18} />
+      Create New User
+    </button>
+
+  </div>
+</div>
 
       {/* Error State */}
       {error && (
