@@ -267,12 +267,12 @@ const LoginForm = () => {
           </button>
         </div>
         {/* other login */}
-        <div>
+        {/* <div>
           <p className="text-contentColor dark:text-contentColor-dark text-center relative mb-15px before:w-2/5 before:h-1px before:bg-borderColor4 dark:before:bg-borderColor2-dark before:absolute before:left-0 before:top-4 after:w-2/5 after:h-1px after:bg-borderColor4 dark:after:bg-borderColor2-dark after:absolute after:right-0 after:top-4">
             or Log-in with
           </p>
-        </div>
-        <div className="text-center flex gap-x-1 md:gap-x-15px lg:gap-x-25px gap-y-5 items-center justify-center flex-wrap">
+        </div> */}
+        {/* <div className="text-center flex gap-x-1 md:gap-x-15px lg:gap-x-25px gap-y-5 items-center justify-center flex-wrap">
           <button
             type="button"
             onClick={(e) => {
@@ -299,7 +299,7 @@ const LoginForm = () => {
           >
             <i className="icofont-google-plus"></i> Google
           </button>
-        </div>
+        </div> */}
       </form>
     </div>
   );
