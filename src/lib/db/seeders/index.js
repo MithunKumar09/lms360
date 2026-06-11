@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import { resolve } from 'path';
 import { seedSuperadmin } from './seed-superadmin.js';
 import { seedSuperadmin2 } from './seed-superadmin-2.js';
+import { seedSuperadmin3 } from './seed-superadmin-3.js';
 import { seedClassesSubjects } from './seed-classes-subjects.js';
 import { seedCertificateTemplates } from './seed-certificate-templates.js';
 import { closePool } from '../index.js';
@@ -34,6 +35,7 @@ async function runAllSeeders() {
     const seeders = [
       { name: 'Superadmin User', fn: seedSuperadmin },
       { name: 'Superadmin User 2', fn: seedSuperadmin2 },
+      { name: 'Superadmin User 3', fn: seedSuperadmin3 },
       { name: 'Classes & Subjects', fn: seedClassesSubjects },
       { name: 'Certificate Templates', fn: seedCertificateTemplates },
       // Add more seeders here as needed

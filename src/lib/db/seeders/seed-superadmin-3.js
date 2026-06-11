@@ -1,12 +1,12 @@
 /**
- * Superadmin User Seeder
+ * Superadmin User Seeder (3rd Account)
  * 
- * Creates the initial superadmin user with secure password hashing.
+ * Creates an additional superadmin user with secure password hashing.
  * This seeder is idempotent - safe to run multiple times.
  * 
  * Superadmin credentials:
- * - Email: mithunkumarkulal33@gmail.com
- * - Password: ##/*%qwerty098765
+ * - Email: upriseproedge360@gmail.com
+ * - Password: Uprise@amit123
  * - Role: superadmin
  * - org_id: NULL (global owner)
  * Nexioproedge360@gmail.com
@@ -16,8 +16,8 @@
 import bcrypt from 'bcryptjs';
 import { query, getClient, closePool } from '../index.js';
 
-const SUPERADMIN_EMAIL = 'mithunkumarkulal33@gmail.com';
-const SUPERADMIN_PASSWORD = '##/*%qwerty098765';
+const SUPERADMIN_EMAIL = 'nexioproedge360@gmail.com';
+const SUPERADMIN_PASSWORD = 'Nexioproedge360';
 const SALT_ROUNDS = 12;
 
 /**
@@ -65,8 +65,8 @@ async function verifyPassword(password, hash) {
 /**
  * Seed superadmin user
  */
-export async function seedSuperadmin() {
-  console.log('🌱 Seeding superadmin user...\n');
+export async function seedSuperadmin3() {
+  console.log('🌱 Seeding second superadmin user...\n');
 
   const client = await getClient();
   
@@ -220,7 +220,7 @@ export async function seedSuperadmin() {
  */
 async function runSeeder() {
   try {
-    await seedSuperadmin();
+    await seedSuperadmin3();
     console.log('✅ Seeding completed successfully!\n');
   } catch (error) {
     console.error('\n❌ Seeding failed:', error.message);
@@ -231,10 +231,22 @@ async function runSeeder() {
 }
 
 // Run if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+import { fileURLToPath } from 'url';
+import { resolve } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+
+const mainModulePath = process.argv[1]
+  ? resolve(process.argv[1])
+  : '';
+
+const currentFilePath = resolve(__filename);
+
+const normalizePath = (p) =>
+  p.replace(/\\/g, '/').toLowerCase();
+
+if (normalizePath(currentFilePath) === normalizePath(mainModulePath)) {
   runSeeder();
 }
-
-export default seedSuperadmin;
-
+export default seedSuperadmin3;
 
