@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { query } from "@/lib/db/index.js";
 
+// This route reads request.url (query params), so it must be dynamic. Without this, Next.js
+// throws a DynamicServerError that the handler's try/catch swallows into a 200 + empty items.
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
