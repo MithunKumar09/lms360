@@ -486,6 +486,7 @@ function OrganizationSelect({ value, onChange, disabled }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false); // one-shot guard so an empty result doesn't loop
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -547,6 +548,7 @@ function OrganizationSelect({ value, onChange, disabled }) {
       setTotal(0);
     } finally {
       setLoading(false);
+      setHasFetched(true); // mark attempted regardless of success/empty/error
     }
   }, [disabled]);
 
@@ -569,12 +571,13 @@ function OrganizationSelect({ value, onChange, disabled }) {
     debouncedSearch(term);
   }, [debouncedSearch]);
 
-  // Load initial data when dropdown opens
+  // Load initial data once when dropdown first opens.
+  // Gate on !hasFetched (not items.length) so an empty result doesn't retrigger forever.
   useEffect(() => {
-    if (isOpen && !loading && items.length === 0) {
+    if (isOpen && !hasFetched && !loading) {
       fetchOrganizations(searchTerm, currentPage);
     }
-  }, [isOpen, fetchOrganizations, searchTerm, currentPage, loading, items.length]);
+  }, [isOpen, hasFetched, loading, fetchOrganizations, searchTerm, currentPage]);
 
   // Fetch selected organization details when value changes
   useEffect(() => {
