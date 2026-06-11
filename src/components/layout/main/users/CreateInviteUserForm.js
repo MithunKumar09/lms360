@@ -40,6 +40,8 @@ import {
   userInviteSchema,
 } from "@/lib/validation/userSchemas.js";
 import { useAvatarUpload } from "@/hooks/useAvatarUpload.js";
+import { useToast } from "@/hooks/useToast.js";
+import ToastContainer from "@/components/shared/errors/ToastContainer.js";
 
 // Local Zustand store for form UI state
 const useFormUIStore = create((set) => ({
@@ -1017,6 +1019,9 @@ export default function CreateInviteUserForm({ actorRole = "superadmin", onSucce
   const [mode, setMode] = useState("create"); // 'create' | 'invite'
   const schema = mode === "create" ? userCreateSchema : userInviteSchema;
   const isSubmittingRef = useRef(false);
+  const { toasts, removeToast, success: toastSuccess, error: toastError, warning: toastWarning } = useToast();
+  // Set when an invite was created but the email could not be delivered, so the admin can copy the link.
+  const [inviteLink, setInviteLink] = useState(null);
   
   // Create a safe resolver wrapper that prevents unhandled errors
   const safeResolver = useCallback((values, context, options) => {
@@ -1389,6 +1394,7 @@ export default function CreateInviteUserForm({ actorRole = "superadmin", onSucce
       debugLog('🔍 [FORM DEBUG] Raw values:', JSON.stringify(values, null, 2));
     
     try {
+      setInviteLink(null); // clear any previously surfaced invite link
       // Clean up the values before sending to API
       const cleanedValues = { ...values };
       
@@ -1451,21 +1457,50 @@ export default function CreateInviteUserForm({ actorRole = "superadmin", onSucce
       debugLog('🔍 [FORM DEBUG] Response data:', JSON.stringify(data, null, 2));
 
       if (!res.ok) {
-        const msg = data?.error || data?.message || "Request failed";
+        // Build a user-friendly message: prefer the server's message, then the first validation
+        // detail, then a code-based fallback. (Previously this surfaced the raw error CODE.)
+        let msg = data?.message;
+        if (!msg && Array.isArray(data?.details) && data.details.length > 0) {
+          const first = data.details[0];
+          const field = Array.isArray(first?.path) ? first.path.filter(Boolean).join('.') : first?.path;
+          msg = field ? `${field}: ${first.message}` : (first?.message || 'Please check the highlighted fields and try again.');
+        }
+        if (!msg) {
+          const CODE_FALLBACKS = {
+            Unauthorized: 'Your session has expired. Please log in again.',
+            Forbidden: 'You do not have permission to perform this action.',
+            VALIDATION_ERROR: 'Please check the highlighted fields and try again.',
+            RATE_LIMIT_EXCEEDED: 'Too many requests. Please try again shortly.',
+            SERVER_ERROR: 'Unable to complete the request at this time. Please try again.',
+          };
+          msg = CODE_FALLBACKS[data?.error] || 'Unable to complete the request at this time. Please try again.';
+        }
         debugLog('🔍 [FORM DEBUG] Request failed, throwing error:', msg);
-        throw new Error(msg);
+        const err = new Error(msg);
+        err.code = data?.error;
+        err.status = res.status;
+        throw err;
       }
 
-      // Success - show message and call callback
+      // Success - show toast and call callback
       debugLog('🔍 [FORM DEBUG] Request successful!');
-      if (typeof window !== "undefined") {
-        // eslint-disable-next-line no-alert
-        alert(mode === "create" ? "User created successfully" : "Invite sent successfully");
-      }
-      
-      if (onSuccess) {
-        debugLog('🔍 [FORM DEBUG] Calling onSuccess callback...');
-        onSuccess();
+
+      if (mode === "create") {
+        toastSuccess("User created successfully.");
+        // Defer the close so the toast is visible before the modal (if any) unmounts.
+        setTimeout(() => { if (onSuccess) onSuccess(); }, 1200);
+      } else {
+        // Invite mode: report the actual email-delivery outcome from the backend.
+        const emailSent = data?.invite?.emailSent;
+        if (emailSent === false) {
+          // Invite was created but the email did not go out — surface the link so the
+          // admin can share it manually. Keep the modal open (don't auto-close).
+          toastWarning("Invitation created, but the email couldn't be sent. Copy the link below to share it manually.", 9000);
+          if (data?.invite?.inviteUrl) setInviteLink(data.invite.inviteUrl);
+        } else {
+          toastSuccess("Invitation sent successfully.");
+          setTimeout(() => { if (onSuccess) onSuccess(); }, 1200);
+        }
       }
       debugLog('🔍 [FORM DEBUG] ===== ONSUBMIT COMPLETED SUCCESSFULLY =====');
     } catch (error) {
@@ -1473,12 +1508,13 @@ export default function CreateInviteUserForm({ actorRole = "superadmin", onSucce
       debugLog('🔍 [FORM DEBUG] Error:', error);
       debugLog('🔍 [FORM DEBUG] Error message:', error?.message);
       debugLog('🔍 [FORM DEBUG] Error stack:', error?.stack);
-      // Only show alert for network/server errors
-      // Validation errors are handled by react-hook-form and displayed in the form
+      // Show a toast for network/server errors.
+      // Field-level validation errors are handled by react-hook-form and displayed inline.
       if (error.message && !error.errors) {
-        if (typeof window !== "undefined") {
-          // eslint-disable-next-line no-alert
-          alert(`Error: ${error.message}`);
+        if (error.code === 'VALIDATION_ERROR') {
+          toastWarning(error.message);
+        } else {
+          toastError(error.message);
         }
       }
       // Re-throw to let react-hook-form handle validation errors
@@ -1596,13 +1632,42 @@ export default function CreateInviteUserForm({ actorRole = "superadmin", onSucce
   }, [isSubmitting, submitCount, errors]);
 
   return (
-    <form 
+    <>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      {inviteLink && (
+        <div className="alert alert-warning d-flex flex-column gap-2 mb-4" role="alert">
+          <div className="fw-semibold">Invitation created — email not sent</div>
+          <div className="small">The invite was saved, but the email could not be delivered. Share this link with the invitee:</div>
+          <div className="d-flex gap-2 align-items-center">
+            <input
+              type="text"
+              readOnly
+              value={inviteLink}
+              className="form-control form-control-sm"
+              onFocus={(e) => e.target.select()}
+            />
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary text-nowrap"
+              onClick={() => {
+                if (typeof navigator !== "undefined" && navigator.clipboard) {
+                  navigator.clipboard.writeText(inviteLink);
+                  toastSuccess("Invite link copied to clipboard.");
+                }
+              }}
+            >
+              Copy link
+            </button>
+          </div>
+        </div>
+      )}
+      <form
       onSubmit={(e) => {
         debugLog('🔍 [FORM DEBUG] ===== FORM ONSUBMIT EVENT =====');
         debugLog('🔍 [FORM DEBUG] Native form submit event triggered');
         debugLog('🔍 [FORM DEBUG] Calling handleFormSubmit...');
         handleFormSubmit(e);
-      }} 
+      }}
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       noValidate 
@@ -2193,6 +2258,7 @@ export default function CreateInviteUserForm({ actorRole = "superadmin", onSucce
         </button>
       </div>
     </form>
+    </>
   );
 }
 

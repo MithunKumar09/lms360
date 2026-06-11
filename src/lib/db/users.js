@@ -1482,6 +1482,29 @@ export async function createInvite({ email, orgId = null, roleId, creatorId, mod
 	}
 }
 
+/**
+ * Find an active (unused, unexpired) pending invite for an email within an organization.
+ * Org-scoped so a pending invite in org A does not block inviting the same email in org B.
+ * Brand/global invites (org_id = null) are matched only against other null-org invites.
+ * Returns the invite id row or null.
+ */
+export async function findActivePendingInvite(email, orgId = null) {
+	try {
+		const res = await query(
+			`SELECT id FROM invite_tokens
+			 WHERE LOWER(email) = LOWER($1)
+			   AND used_at IS NULL
+			   AND expires_at > CURRENT_TIMESTAMP
+			   AND ( ($2::uuid IS NULL AND org_id IS NULL) OR org_id = $2::uuid )
+			 LIMIT 1`,
+			[email, orgId]
+		);
+		return res.rows[0] || null;
+	} catch (err) {
+		throw mapDbError(err);
+	}
+}
+
 export async function getInviteByTokenHash(tokenHash) {
 	// tokenHash can be Buffer or hex string
 	// Convert to hex string if it's a Buffer, since we store it as hex string

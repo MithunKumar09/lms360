@@ -214,7 +214,17 @@ export async function POST(request) {
       }
     }
     // Superadmin can create all roles (no restriction needed)
-    
+
+    // Tenant-isolation guard: admin/instructor must have a resolved organization.
+    // Without this, a null session orgId would skip all org enforcement below and let a
+    // payload org_id pass through unchecked.
+    if ((userRole === "admin" || userRole === "instructor") && !session.user.orgId) {
+      return NextResponse.json(
+        { error: "NO_ORG", message: "Your account is not linked to an organization, so you cannot create users. Contact a super admin." },
+        { status: 403 }
+      );
+    }
+
     // For student creation, check if cohort has offerings
     // If cohort has no offerings, make subject_offering_ids optional
     if (body.role === "student" && body.cohort_id) {
@@ -358,6 +368,23 @@ export async function POST(request) {
         { error: e.code || "VALIDATION_ERROR", message: errorMessage },
         { status: 400 }
       );
+    }
+
+    // Duplicate guard: email is globally unique. createUserWithRole upserts on conflict, so
+    // without this pre-check an existing account would be silently overwritten (and could be
+    // moved across organizations). Detect it here and return 409 instead.
+    {
+      const { query } = await import("@/lib/db/index.js");
+      const existing = await query(
+        'SELECT id FROM users WHERE LOWER(email) = LOWER($1) LIMIT 1',
+        [validatedData.email]
+      );
+      if (existing.rows.length > 0) {
+        return NextResponse.json(
+          { error: "DUPLICATE_EMAIL", message: "A user with this email already exists." },
+          { status: 409 }
+        );
+      }
     }
 
     // Hash password

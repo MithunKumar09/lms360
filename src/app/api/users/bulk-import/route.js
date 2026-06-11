@@ -27,6 +27,15 @@ export async function POST(request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Tenant-isolation guard: an admin must have a resolved organization. Without this, a null
+    // session orgId would skip org enforcement below and let payload org_id pass through unchecked.
+    if (userRole === "admin" && !session.user.orgId) {
+      return NextResponse.json(
+        { error: "NO_ORG", message: "Your account is not linked to an organization, so you cannot import users. Contact a super admin." },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { users: usersData, options = {} } = body;
 
@@ -88,6 +97,21 @@ export async function POST(request) {
               index: i,
               email: userData.email || 'unknown',
               error: e.message || 'Validation error',
+            });
+            continue;
+          }
+
+          // Duplicate guard: email is globally unique and createUserWithRole upserts on conflict,
+          // which would silently overwrite an existing account. Report it as an error instead.
+          const existing = await client.query(
+            'SELECT id FROM users WHERE LOWER(email) = LOWER($1) LIMIT 1',
+            [validatedData.email]
+          );
+          if (existing.rows.length > 0) {
+            results.errors.push({
+              index: i,
+              email: validatedData.email,
+              error: 'User with this email already exists',
             });
             continue;
           }

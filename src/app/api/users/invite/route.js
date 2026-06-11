@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { userInviteSchema, validateInviteWithActor } from "@/lib/validation/userSchemas.js";
-import { getRoleByCode, createInvite } from "@/lib/db/users.js";
+import { getRoleByCode, createInvite, findActivePendingInvite } from "@/lib/db/users.js";
 import { generateTokenHex, sha256 } from "@/lib/security/tokens.js";
 import { generateTemporaryPassword } from "@/lib/security/passwordGenerator.js";
 import { auth } from "@/app/api/auth/[...nextauth]/route.js";
@@ -65,6 +65,17 @@ export async function POST(request) {
     }
     // Superadmin can invite all roles (no restriction needed)
     console.log('📧 [INVITE] ✅ Authorized - User has permission to invite');
+
+    // Tenant-isolation guard: admin/instructor must have a resolved organization.
+    // Without this, a null session orgId would skip all org enforcement below and let a
+    // payload org_id pass through unchecked.
+    if ((userRole === "admin" || userRole === "instructor") && !session.user.orgId) {
+      console.log('📧 [INVITE] ❌ No organization linked to account');
+      return NextResponse.json(
+        { error: "NO_ORG", message: "Your account is not linked to an organization, so you cannot invite users. Contact a super admin." },
+        { status: 403 }
+      );
+    }
 
     // Rate limiting
     const rateLimitResult = rateLimit(request, 'invitation', session.user.id);
@@ -215,6 +226,17 @@ export async function POST(request) {
       );
     }
 
+    // Duplicate-invite guard: block if an active (unused, unexpired) invite already exists
+    // for this email within the same organization. Org-scoped so org A doesn't block org B.
+    const existingInvite = await findActivePendingInvite(validatedData.email, validatedData.org_id || null);
+    if (existingInvite) {
+      console.log('📧 [INVITE] ❌ Active invite already pending for this email/org');
+      return NextResponse.json(
+        { error: "DUPLICATE_INVITE", message: "An invitation for this email is already pending for this organization." },
+        { status: 409 }
+      );
+    }
+
     // Get or create role ID
     console.log('📧 [INVITE] ===== ROLE LOOKUP START =====');
     console.log('📧 [INVITE] Requested role code:', validatedData.role);
@@ -349,8 +371,8 @@ export async function POST(request) {
     const tokenHash = sha256(token);
     console.log('📧 [INVITE] ✅ Token generated (hash:', tokenHash.toString("hex").substring(0, 16) + '...)');
 
-    // Calculate expiry (enforce 24 hours for invitations)
-    const expiryHours = Math.min(validatedData.expiry_hours || 24, 24); // Max 24 hours
+    // Calculate expiry — honor the admin's chosen value (schema bounds it to 1–168h, default 72)
+    const expiryHours = validatedData.expiry_hours || 72;
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + expiryHours);
     console.log('📧 [INVITE] Invite expires at:', expiresAt.toISOString(), `(${expiryHours} hours)`);
@@ -491,7 +513,9 @@ export async function POST(request) {
       }
     }
 
-    // Send email
+    // Send email — track actual delivery so the client isn't told "sent" when it wasn't
+    let emailDelivered = false;
+    let emailTestMode = false;
     console.log('📧 [INVITE] ===== PREPARING TO SEND EMAIL =====');
     console.log('📧 [INVITE] Email config check:');
     console.log('📧 [INVITE]   - SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? 'Set (' + process.env.SENDGRID_API_KEY.substring(0, 10) + '...)' : '❌ NOT SET');
@@ -533,6 +557,10 @@ export async function POST(request) {
         html: emailTemplate.html,
         category: 'user_invite',
       });
+
+      // emailResult.test === true means SendGrid was not actually invoked (test mode / no API key)
+      emailTestMode = !!emailResult.test;
+      emailDelivered = !emailResult.test;
 
       console.log('📧 [INVITE] ✅ Email sent successfully:', {
         messageId: emailResult.id,
@@ -591,6 +619,8 @@ export async function POST(request) {
         email: validatedData.email,
         inviteUrl,
         expiresAt: expiresAt.toISOString(),
+        emailSent: emailDelivered,
+        emailTestMode,
       },
     }, { status: 201 });
     
