@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import useSweetAlert from "@/hooks/useSweetAlert";
 import { loginSchema, validateForm } from "@/lib/validation/schemas.js";
 import ValidationError from "@/components/shared/errors/ValidationError.js";
+import PasswordResetRequiredNotice from "@/components/shared/login/PasswordResetRequiredNotice";
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess, message }) => {
   const router = useRouter();
@@ -177,6 +178,15 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, message }) => {
             </div>
           )}
 
+          {loginMutation.data?.requiresPasswordReset ? (
+            <PasswordResetRequiredNotice
+              message={loginMutation.data.message}
+              hasValidResetToken={loginMutation.data.hasValidResetToken}
+              onBackToLogin={() => loginMutation.reset()}
+              onBeforeNavigate={onClose}
+            />
+          ) : (
+          <>
           <p className="mb-4 text-contentColor dark:text-contentColor-dark">
             Please login to add courses to your wishlist and access all features.
           </p>
@@ -237,12 +247,12 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, message }) => {
                 </span>
               </label>
               <a
-                href="/forgot-password"
+                href="/auth/forgot-password"
                 className="text-sm text-primaryColor hover:text-secondaryColor transition-colors duration-200"
                 onClick={(e) => {
                   e.preventDefault();
                   onClose();
-                  router.push("/forgot-password");
+                  router.push("/auth/forgot-password");
                 }}
               >
                 Forgot password?
@@ -257,6 +267,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, message }) => {
               {loginMutation.isPending ? "Logging in..." : "Login"}
             </button>
           </form>
+          </>
+          )}
         </div>
 
         {/* Modal Footer */}
