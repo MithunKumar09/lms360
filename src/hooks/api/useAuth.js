@@ -17,10 +17,7 @@ import { getDashboardPath } from '@/lib/auth/roles.js';
  * useLogin Mutation Hook
  * 
  * Handles user login with email and password.
- * 
- * ⚠️ DEBUG MODE: Redirects are currently DISABLED to allow viewing console logs.
- * TODO: Re-enable redirects after debugging by uncommenting the redirect code.
- * 
+ *
  * @returns {Object} Login mutation
  */
 export const useLogin = () => {
@@ -46,6 +43,14 @@ export const useLogin = () => {
       // Check if MFA setup is required (this is a success case with requiresMfaSetup flag)
       // The API returns 200 status with requiresMfaSetup: true when password is correct but MFA needs setup
       if (response.requiresMfaSetup) {
+        return response;
+      }
+
+      // Password is correct but the account must reset its password before sign-in.
+      // The API returns 200 with requiresPasswordReset: true (+ hasValidResetToken).
+      // Surface it to the component (which renders a persistent notice) instead of
+      // throwing a generic "Login failed".
+      if (response.requiresPasswordReset) {
         return response;
       }
 

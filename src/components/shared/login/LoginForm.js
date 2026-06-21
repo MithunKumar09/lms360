@@ -9,6 +9,7 @@ import { formatValidationErrors, getFieldError } from "@/lib/validation/validato
 import { handleError } from "@/lib/errors/errorHandler.js";
 import ValidationError from "@/components/shared/errors/ValidationError.js";
 import ErrorDisplay from "@/components/shared/errors/ErrorDisplay.js";
+import PasswordResetRequiredNotice from "@/components/shared/login/PasswordResetRequiredNotice";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -111,6 +112,20 @@ const LoginForm = () => {
       setRememberMe(true);
     }
   }, []);
+
+  // Account requires a password reset before sign-in: replace the form with a
+  // persistent, actionable notice (no transient toast; form stays suppressed).
+  if (loginMutation.data?.requiresPasswordReset) {
+    return (
+      <div className="opacity-100 transition-opacity duration-150 ease-linear">
+        <PasswordResetRequiredNotice
+          message={loginMutation.data.message}
+          hasValidResetToken={loginMutation.data.hasValidResetToken}
+          onBackToLogin={() => loginMutation.reset()}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className=" opacity-100 transition-opacity duration-150 ease-linear">

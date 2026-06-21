@@ -46,8 +46,13 @@ export const useCompletePasswordReset = () => {
   return useMutation({
     mutationFn: (data) =>
       apiClient.post(getEndpoint("auth.passwordReset.complete"), data),
-    onSuccess: () => {
-      createAlert("success", "Password reset successfully. Redirecting to login...");
+    onSuccess: (res) => {
+      // apiClient resolves (does not throw) for non-2xx responses, so only
+      // celebrate when the request actually succeeded — otherwise a 400
+      // (weak/invalid) would surface a false "success" toast.
+      if (res?.success) {
+        createAlert("success", "Password reset successfully. Redirecting to login...");
+      }
     },
     onError: (error) => {
       createAlert(
